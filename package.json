@@ -1,0 +1,43 @@
+{
+  "name": "oneteenonetree",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "postbuild": "next-sitemap",
+    "gen:geo": "node scripts/generate-geo.js",
+    "gen:geo:split": "node scripts/generate-geo.js --split-cities",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@auth/core": "0.35.2",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/supabase-js": "^2.78.0",
+    "autoprefixer": "10.4.20",
+    "date-fns": "4.1.0",
+    "framer-motion": "^11.3.24",
+    "googleapis": "^164.1.0",
+    "next": "15.0.7",
+    "next-sitemap": "^4.2.3",
+    "postcss": "8.4.47",
+    "react": "18.3.1",
+    "react-confetti": "^6.4.0",
+    "react-dom": "18.3.1",
+    "react-icons": "^5.5.0",
+    "react-intersection-observer": "^10.0.0",
+    "tailwindcss": "3.4.14",
+    "xml2js": "0.6.2",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.7.5",
+    "@types/react": "18.3.7",
+    "@types/react-dom": "18.3.0",
+    "eslint": "9.12.0",
+    "eslint-config-next": "^16.1.3",
+    "typescript": "5.6.2"
+  }
+}
