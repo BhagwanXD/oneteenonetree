@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { canAccessRoute } from '@/lib/authz'
+import AdminNav from './admin-nav'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
@@ -28,5 +29,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (!access.allowed) redirect('/')
 
-  return children
+  return (
+    <div className="space-y-6">
+      <div className="container pt-8">
+        <AdminNav />
+      </div>
+      {children}
+    </div>
+  )
 }

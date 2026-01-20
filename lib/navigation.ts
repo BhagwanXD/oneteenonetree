@@ -46,7 +46,7 @@ export const publicNavItems: NavItem[] = [
 
 export const accountNavItems: AccountNavItem[] = [
   { label: 'Dashboard', href: '/dashboard', visibility: 'auth' },
-  { label: 'Admin', href: '/admin/review', visibility: 'role', requiredRoles: ['admin'] },
+  { label: 'Admin', href: '/admin', visibility: 'role', requiredRoles: ['admin'] },
   { label: 'Debug', href: '/debug/auth', visibility: 'role', requiredRoles: ['admin'] },
 ]
 
