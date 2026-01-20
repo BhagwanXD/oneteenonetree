@@ -18,12 +18,18 @@ const platformConfig = {
   instagram: {
     label: "Instagram",
     icon: <FaInstagram className="text-base" />,
+    iconLarge: <FaInstagram className="text-3xl" />,
     badge: "border-pink-500/40 bg-pink-600/20 text-pink-200",
+    fallback: "from-pink-500/30 via-rose-500/10 to-orange-500/20",
+    cta: "Open on Instagram",
   },
   linkedin: {
     label: "LinkedIn",
     icon: <FaLinkedin className="text-base" />,
+    iconLarge: <FaLinkedin className="text-3xl" />,
     badge: "border-sky-500/40 bg-sky-600/20 text-sky-200",
+    fallback: "from-sky-500/30 via-cyan-500/10 to-blue-500/20",
+    cta: "Open on LinkedIn",
   },
 };
 
@@ -64,6 +70,7 @@ export default function SocialClient({
     all: initialPosts.length >= PAGE_SIZE,
   });
   const [loading, setLoading] = useState(false);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   const currentPosts = postsByFilter[activeFilter] ?? [];
   const hasMore = hasMoreByFilter[activeFilter] ?? false;
@@ -176,12 +183,7 @@ export default function SocialClient({
                 {currentPosts.map((post) => {
                   const platform = platformConfig[post.platform];
                   const dateLabel = getDisplayDate(post);
-                  const imageUrl =
-                    post.image_url ||
-                    (post.platform === "instagram"
-                      ? "/images/social/instagram-placeholder.jpg"
-                      : "/images/social/linkedin-placeholder.jpg");
-                  const isPlaceholder = imageUrl.startsWith("/images/social/");
+                  const showImage = Boolean(post.image_url) && !failedImages[post.id];
                   return (
                     <div key={post.id} className="card flex flex-col gap-4">
                       <div className="flex items-center justify-between">
@@ -196,25 +198,29 @@ export default function SocialClient({
                         ) : null}
                       </div>
 
-                      {imageUrl ? (
+                      {showImage ? (
                         <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                           <img
-                            src={imageUrl}
+                            src={post.image_url ?? ""}
                             alt=""
                             className="h-40 w-full object-cover"
                             referrerPolicy="no-referrer"
+                            onError={() =>
+                              setFailedImages((prev) => ({ ...prev, [post.id]: true }))
+                            }
                           />
                         </div>
                       ) : (
-                        <div className="h-40 rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 via-transparent to-white/5 flex items-center justify-center text-white/50 text-sm">
-                          Preview not available. Tap 'View post'.
+                        <div
+                          className={`h-40 rounded-2xl border border-white/10 bg-gradient-to-br ${platform.fallback} flex flex-col items-center justify-center text-center gap-2 px-4`}
+                        >
+                          <div className="text-white/80">{platform.iconLarge}</div>
+                          <div className="text-sm font-semibold text-white">
+                            Preview not available
+                          </div>
+                          <div className="text-xs text-white/70">{platform.cta}</div>
                         </div>
                       )}
-                      {isPlaceholder ? (
-                        <div className="text-xs text-white/50">
-                          Preview not available. Tap 'View post'.
-                        </div>
-                      ) : null}
 
                       <div className="space-y-2">
                         <h3 className="text-lg font-semibold text-white line-clamp-2">

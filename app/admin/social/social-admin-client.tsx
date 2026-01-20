@@ -65,6 +65,7 @@ export default function SocialAdminClient({
   })
   const [busyId, setBusyId] = useState<string | null>(null)
   const [status, setStatus] = useState<string>('')
+  const [failedThumbs, setFailedThumbs] = useState<Record<string, boolean>>({})
   const [bulkContent, setBulkContent] = useState<string>('')
   const [bulkPreview, setBulkPreview] = useState<
     { rowIndex: number; platform: string; url: string; title: string; postDate: string; published: string }[]
@@ -122,7 +123,8 @@ export default function SocialAdminClient({
     }
     setPosts((prev) => [payload.post, ...prev])
     setForm({ url: '', platform: 'auto', title: '', postDate: '', published: true })
-    setStatus('Post added.')
+    const previewLabel = payload.previewFound ? 'yes' : 'no'
+    setStatus(`Post added. Preview found: ${previewLabel}.`)
   }
 
   const handleUpdate = async (post: SocialPost) => {
@@ -435,17 +437,21 @@ export default function SocialAdminClient({
             <div key={post.id} className="card space-y-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div className="flex items-center gap-3">
-                  <img
-                    src={
-                      post.image_url ||
-                      (post.platform === 'instagram'
-                        ? '/images/social/instagram-placeholder.jpg'
-                        : '/images/social/linkedin-placeholder.jpg')
-                    }
-                    alt=""
-                    className="h-16 w-16 rounded-xl object-cover border border-white/10"
-                    referrerPolicy="no-referrer"
-                  />
+                  {post.image_url && !failedThumbs[post.id] ? (
+                    <img
+                      src={post.image_url}
+                      alt=""
+                      className="h-16 w-16 rounded-xl object-cover border border-white/10"
+                      referrerPolicy="no-referrer"
+                      onError={() =>
+                        setFailedThumbs((prev) => ({ ...prev, [post.id]: true }))
+                      }
+                    />
+                  ) : (
+                    <div className="h-16 w-16 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/60">
+                      {platformMeta[post.platform].icon}
+                    </div>
+                  )}
                   <div>
                     <span
                       className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${platformMeta[post.platform].badge}`}

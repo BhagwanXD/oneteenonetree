@@ -157,9 +157,8 @@ export const fetchLinkPreview = async (
   url: string,
   platform?: 'instagram' | 'linkedin'
 ): Promise<LinkPreview> => {
-  const placeholder = getSocialPlaceholder(platform)
   if (!isSafeUrl(url)) {
-    return { imageUrl: placeholder }
+    return {}
   }
 
   const controller = new AbortController()
@@ -176,14 +175,14 @@ export const fetchLinkPreview = async (
       },
     })
 
-    if (!response.ok) return { imageUrl: placeholder }
-    if (!response.url || !isSafeUrl(response.url)) return { imageUrl: placeholder }
+    if (!response.ok) return {}
+    if (!response.url || !isSafeUrl(response.url)) return {}
 
     const contentLength = response.headers.get('content-length')
-    if (contentLength && Number(contentLength) > MAX_BYTES) return { imageUrl: placeholder }
+    if (contentLength && Number(contentLength) > MAX_BYTES) return {}
 
     const html = await readLimitedText(response)
-    if (!html) return { imageUrl: placeholder }
+    if (!html) return {}
 
     const title =
       extractMeta(html, 'og:title') ||
@@ -198,17 +197,17 @@ export const fetchLinkPreview = async (
       extractMeta(html, 'og:image:secure_url') ||
       extractMeta(html, 'twitter:image') ||
       extractMeta(html, 'twitter:image:src')
-    const imageUrl = rawImage ? resolveUrl(rawImage, response.url) : ''
+    const imageUrl = rawImage ? resolveUrl(rawImage, response.url) : undefined
     const postDate = extractPostDate(html)
 
     return {
       title: title || undefined,
       description: description || undefined,
-      imageUrl: imageUrl || placeholder,
+      imageUrl,
       postDate,
     }
   } catch {
-    return { imageUrl: placeholder }
+    return {}
   } finally {
     clearTimeout(timeout)
   }

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { parseSocialCsv } from '@/lib/social/csv'
-import { getSocialPlaceholder } from '@/lib/social/fetchLinkPreview'
 
 export const runtime = 'nodejs'
 
@@ -83,7 +82,6 @@ export async function POST(req: Request) {
     platform: 'instagram' | 'linkedin'
     url: string
     title: string | null
-    image_url: string
     post_date: string | null
     published: boolean
     source: 'manual'
@@ -148,7 +146,6 @@ export async function POST(req: Request) {
       platform: detected,
       url,
       title: title ? title.slice(0, maxTitleLength) : null,
-      image_url: getSocialPlaceholder(detected),
       post_date: parsedDate.value,
       published: parsedPublished.value,
       source: 'manual',

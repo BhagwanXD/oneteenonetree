@@ -70,10 +70,22 @@ export async function POST(req: Request) {
   }
 
   const preview = await fetchLinkPreview(url, platform)
+  const previewFound = Boolean(preview.imageUrl)
+  console.info('Social preview', {
+    platform,
+    url,
+    hasTitle: Boolean(preview.title),
+    hasDescription: Boolean(preview.description),
+    hasImage: previewFound,
+    hasPostDate: Boolean(preview.postDate),
+  })
   const insertPayload = {
     platform,
     url,
-    title: titleInput || preview.title || null,
+    title:
+      titleInput ||
+      preview.title ||
+      (platform === 'instagram' ? 'Instagram post' : null),
     description: preview.description || null,
     image_url: preview.imageUrl || null,
     post_date: postDate || preview.postDate || null,
@@ -91,7 +103,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
 
-  return NextResponse.json({ post: data })
+  return NextResponse.json({ post: data, previewFound })
 }
 
 export async function PATCH(req: Request) {
@@ -120,9 +132,17 @@ export async function PATCH(req: Request) {
     updates.url = payload.url.trim()
     const previewPlatform = updates.platform ?? detectPlatform(updates.url) ?? undefined
     const preview = await fetchLinkPreview(updates.url, previewPlatform)
+    console.info('Social preview update', {
+      platform: previewPlatform,
+      url: updates.url,
+      hasTitle: Boolean(preview.title),
+      hasDescription: Boolean(preview.description),
+      hasImage: Boolean(preview.imageUrl),
+      hasPostDate: Boolean(preview.postDate),
+    })
     if (!updates.title && preview.title) updates.title = preview.title
     if (preview.description) updates.description = preview.description
-    if (preview.imageUrl) updates.image_url = preview.imageUrl
+    updates.image_url = preview.imageUrl || null
     if (!updates.post_date && preview.postDate) updates.post_date = preview.postDate
   }
 
