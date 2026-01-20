@@ -292,13 +292,16 @@ export default function SocialAdminClient({
             />
           </label>
           <label className="text-sm space-y-2">
-            <span className="text-white/70">Post date</span>
+            <span className="text-white/70">Post date (optional)</span>
             <input
               type="datetime-local"
               value={form.postDate}
               onChange={(event) => setForm({ ...form, postDate: event.target.value })}
               className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm focus:border-emerald-300/60 focus:ring-2 focus:ring-emerald-500"
             />
+            <span className="text-xs text-white/50">
+              Leave blank if unknown; the site will show "Added on" instead.
+            </span>
           </label>
         </div>
         <label className="flex items-center gap-2 text-sm text-white/70">
@@ -432,15 +435,17 @@ export default function SocialAdminClient({
             <div key={post.id} className="card space-y-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div className="flex items-center gap-3">
-                  {post.image_url ? (
-                    <img
-                      src={post.image_url}
-                      alt=""
-                      className="h-16 w-16 rounded-xl object-cover border border-white/10"
-                    />
-                  ) : (
-                    <div className="h-16 w-16 rounded-xl border border-white/10 bg-white/10" />
-                  )}
+                  <img
+                    src={
+                      post.image_url ||
+                      (post.platform === 'instagram'
+                        ? '/images/social/instagram-placeholder.jpg'
+                        : '/images/social/linkedin-placeholder.jpg')
+                    }
+                    alt=""
+                    className="h-16 w-16 rounded-xl object-cover border border-white/10"
+                    referrerPolicy="no-referrer"
+                  />
                   <div>
                     <span
                       className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${platformMeta[post.platform].badge}`}
@@ -481,7 +486,7 @@ export default function SocialAdminClient({
                   />
                 </label>
                 <label className="text-sm space-y-2">
-                  <span className="text-white/70">Post date</span>
+                  <span className="text-white/70">Post date (optional)</span>
                   <input
                     type="datetime-local"
                     value={toInputDate(post.post_date)}

@@ -40,8 +40,13 @@ const formatDate = (value?: string | null) => {
   });
 };
 
-const getDisplayDate = (post: SocialPost) =>
-  formatDate(post.post_date || post.created_at);
+const getDisplayDate = (post: SocialPost) => {
+  if (post.post_date) {
+    return formatDate(post.post_date);
+  }
+  const created = formatDate(post.created_at);
+  return created ? `Added on ${created}` : "";
+};
 
 export default function SocialClient({
   initialPosts,
@@ -171,6 +176,12 @@ export default function SocialClient({
                 {currentPosts.map((post) => {
                   const platform = platformConfig[post.platform];
                   const dateLabel = getDisplayDate(post);
+                  const imageUrl =
+                    post.image_url ||
+                    (post.platform === "instagram"
+                      ? "/images/social/instagram-placeholder.jpg"
+                      : "/images/social/linkedin-placeholder.jpg");
+                  const isPlaceholder = imageUrl.startsWith("/images/social/");
                   return (
                     <div key={post.id} className="card flex flex-col gap-4">
                       <div className="flex items-center justify-between">
@@ -185,19 +196,25 @@ export default function SocialClient({
                         ) : null}
                       </div>
 
-                      {post.image_url ? (
+                      {imageUrl ? (
                         <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                           <img
-                            src={post.image_url}
+                            src={imageUrl}
                             alt=""
                             className="h-40 w-full object-cover"
+                            referrerPolicy="no-referrer"
                           />
                         </div>
                       ) : (
                         <div className="h-40 rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 via-transparent to-white/5 flex items-center justify-center text-white/50 text-sm">
-                          Preview unavailable
+                          Preview not available. Tap 'View post'.
                         </div>
                       )}
+                      {isPlaceholder ? (
+                        <div className="text-xs text-white/50">
+                          Preview not available. Tap 'View post'.
+                        </div>
+                      ) : null}
 
                       <div className="space-y-2">
                         <h3 className="text-lg font-semibold text-white line-clamp-2">

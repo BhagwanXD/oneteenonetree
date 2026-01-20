@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { fetchOpenGraph } from '@/lib/social/og'
+import { fetchLinkPreview } from '@/lib/social/fetchLinkPreview'
 
 export const runtime = 'nodejs'
 
@@ -69,14 +69,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unsupported platform URL' }, { status: 400 })
   }
 
-  const og = await fetchOpenGraph(url)
+  const preview = await fetchLinkPreview(url, platform)
   const insertPayload = {
     platform,
     url,
-    title: titleInput || og.title || null,
-    description: og.description || null,
-    image_url: og.imageUrl || null,
-    post_date: postDate,
+    title: titleInput || preview.title || null,
+    description: preview.description || null,
+    image_url: preview.imageUrl || null,
+    post_date: postDate || preview.postDate || null,
     published,
     source: 'manual',
   }
@@ -118,10 +118,12 @@ export async function PATCH(req: Request) {
 
   if (typeof payload.url === 'string' && payload.url.trim()) {
     updates.url = payload.url.trim()
-    const og = await fetchOpenGraph(updates.url)
-    if (!updates.title && og.title) updates.title = og.title
-    if (og.description) updates.description = og.description
-    if (og.imageUrl) updates.image_url = og.imageUrl
+    const previewPlatform = updates.platform ?? detectPlatform(updates.url) ?? undefined
+    const preview = await fetchLinkPreview(updates.url, previewPlatform)
+    if (!updates.title && preview.title) updates.title = preview.title
+    if (preview.description) updates.description = preview.description
+    if (preview.imageUrl) updates.image_url = preview.imageUrl
+    if (!updates.post_date && preview.postDate) updates.post_date = preview.postDate
   }
 
   const { data, error } = await supabase
