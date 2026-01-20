@@ -1,5 +1,5 @@
 # OneTeenOneTree.org — Starter
-
+ 
 Minimal Next.js (App Router) + NextAuth (Google) + Tailwind scaffold.
 
 ## Pages
