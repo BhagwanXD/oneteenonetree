@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaInstagram, FaLinkedin, FaSyncAlt, FaTrash } from 'react-icons/fa'
+import { parseSocialCsv } from '@/lib/social/csv'
 
 type SocialPost = {
   id: string
@@ -14,6 +15,19 @@ type SocialPost = {
   created_at: string
   published: boolean
   source: 'manual' | 'auto'
+}
+
+type BulkFailure = {
+  row: number
+  reason: string
+  url?: string
+}
+
+type BulkSummary = {
+  total: number
+  imported: number
+  duplicates: number
+  failed: BulkFailure[]
 }
 
 const platformMeta = {
@@ -51,6 +65,39 @@ export default function SocialAdminClient({
   })
   const [busyId, setBusyId] = useState<string | null>(null)
   const [status, setStatus] = useState<string>('')
+  const [bulkContent, setBulkContent] = useState<string>('')
+  const [bulkPreview, setBulkPreview] = useState<
+    { rowIndex: number; platform: string; url: string; title: string; postDate: string; published: string }[]
+  >([])
+  const [bulkCount, setBulkCount] = useState<number>(0)
+  const [bulkError, setBulkError] = useState<string>('')
+  const [bulkSummary, setBulkSummary] = useState<BulkSummary | null>(null)
+  const [bulkPublishedDefault, setBulkPublishedDefault] = useState(true)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (!bulkContent.trim()) {
+      setBulkPreview([])
+      setBulkCount(0)
+      setBulkError('')
+      return
+    }
+    if (bulkSummary) setBulkSummary(null)
+    try {
+      const parsed = parseSocialCsv(bulkContent)
+      setBulkPreview(parsed.rows.slice(0, 10))
+      setBulkCount(parsed.totalRows)
+      if (parsed.totalRows > 200) {
+        setBulkError('Limit is 200 rows per import.')
+      } else {
+        setBulkError('')
+      }
+    } catch {
+      setBulkPreview([])
+      setBulkCount(0)
+      setBulkError('Could not parse CSV. Please check formatting.')
+    }
+  }, [bulkContent, bulkSummary])
 
   const handleCreate = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -136,6 +183,59 @@ export default function SocialAdminClient({
     )
   }
 
+  const handleBulkFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      setBulkError('Please upload a .csv file.')
+      return
+    }
+    const text = await file.text()
+    setBulkContent(text)
+    setBulkSummary(null)
+  }
+
+  const handleBulkImport = async () => {
+    setBulkSummary(null)
+    if (!bulkContent.trim()) {
+      setBulkError('Upload a CSV file or paste URLs first.')
+      return
+    }
+    if (bulkCount === 0) {
+      setBulkError('No rows found to import.')
+      return
+    }
+    if (bulkCount > 200) {
+      setBulkError('Limit is 200 rows per import.')
+      return
+    }
+
+    setBulkError('')
+    setBusyId('bulk')
+    const res = await fetch('/api/admin/social/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        content: bulkContent,
+        publishedDefault: bulkPublishedDefault,
+      }),
+    })
+    const payload = await res.json().catch(() => ({}))
+    setBusyId(null)
+    if (!res.ok) {
+      setBulkError(payload.error || 'Bulk import failed.')
+      return
+    }
+    if (Array.isArray(payload.inserted)) {
+      setPosts((prev) => [...payload.inserted, ...prev])
+    }
+    setBulkSummary(payload.summary || null)
+    setBulkContent('')
+    setBulkPreview([])
+    setBulkCount(0)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   return (
     <div className="container py-8 space-y-8">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -217,6 +317,112 @@ export default function SocialAdminClient({
           {status ? <span className="text-sm text-white/60">{status}</span> : null}
         </div>
       </form>
+
+      <section className="card space-y-4">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">Bulk import</h2>
+            <p className="text-sm text-white/60">
+              Upload a CSV or paste URLs to add multiple posts at once.
+            </p>
+          </div>
+          <a href="/templates/social_posts_import.csv" download className="btn">
+            Download CSV template
+          </a>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="text-sm space-y-2" htmlFor="bulk-csv">
+            <span className="text-white/70">CSV file</span>
+            <input
+              id="bulk-csv"
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleBulkFile}
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="text-sm space-y-2" htmlFor="bulk-paste">
+            <span className="text-white/70">Paste URLs (one per line)</span>
+            <textarea
+              id="bulk-paste"
+              rows={6}
+              value={bulkContent}
+              onChange={(event) => setBulkContent(event.target.value)}
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm focus:border-emerald-300/60 focus:ring-2 focus:ring-emerald-500"
+              placeholder="https://www.instagram.com/p/..."
+            />
+          </label>
+        </div>
+
+        <label className="flex items-center gap-2 text-sm text-white/70">
+          <input
+            type="checkbox"
+            checked={bulkPublishedDefault}
+            onChange={(event) => setBulkPublishedDefault(event.target.checked)}
+            className="h-4 w-4"
+          />
+          Publish immediately when published is blank
+        </label>
+
+        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-white/70">
+            <span>{bulkCount ? `${bulkCount} rows detected` : 'No rows detected yet.'}</span>
+            <span>Previewing first 10 rows.</span>
+          </div>
+          {bulkPreview.length === 0 ? (
+            <div className="text-sm text-white/50">Upload a file or paste content to preview.</div>
+          ) : (
+            <div className="space-y-2 text-xs">
+              {bulkPreview.map((row) => (
+                <div
+                  key={row.rowIndex}
+                  className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2"
+                >
+                  <div className="text-white/60">Row {row.rowIndex}</div>
+                  <div className="text-white/80 truncate">{row.url || 'Missing URL'}</div>
+                  <div className="text-white/50">
+                    {row.platform || 'auto'} • {row.title || 'Untitled'} •{' '}
+                    {row.postDate || 'no date'} • {row.published || 'default'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {bulkError ? <div className="text-sm text-red-300">{bulkError}</div> : null}
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={handleBulkImport}
+            disabled={busyId === 'bulk'}
+            className="btn"
+          >
+            {busyId === 'bulk' ? 'Importing…' : 'Import CSV'}
+          </button>
+          {bulkSummary ? (
+            <span className="text-sm text-white/60">
+              Imported {bulkSummary.imported} · Skipped {bulkSummary.duplicates} · Failed{' '}
+              {bulkSummary.failed.length}
+            </span>
+          ) : null}
+        </div>
+
+        {bulkSummary?.failed.length ? (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-sm space-y-2">
+            <div className="text-white/70 font-semibold">Failed rows</div>
+            {bulkSummary.failed.map((row) => (
+              <div key={`${row.row}-${row.url ?? 'row'}`} className="text-white/60">
+                Row {row.row}: {row.reason}
+                {row.url ? ` (${row.url})` : ''}
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
 
       <div className="space-y-4">
         {posts.length === 0 ? (

@@ -161,7 +161,8 @@ export default function SocialClient({
             <div className="card text-center max-w-xl mx-auto space-y-4">
               <h2 className="text-2xl font-semibold">No posts yet.</h2>
               <p className="text-white/70">
-                Check back soon for the latest Instagram and LinkedIn updates.
+                Check back soon for the latest Instagram and LinkedIn updates. Admins can add posts
+                from /admin/social.
               </p>
             </div>
           ) : (

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://www.oneteenonetree.org/donate</loc><lastmod>2026-01-20T17:19:03.243Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/games/eco-tac-toe</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/contact</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/legal/terms</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/our-team</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/press</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/legal/privacy</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/games</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/about</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/auth/confirm</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.oneteenonetree.org/leaderboard</loc><lastmod>2026-01-20T17:19:03.247Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/contact</loc><lastmod>2026-01-20T17:48:02.281Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/games/eco-tac-toe</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/donate</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/legal/privacy</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/legal/terms</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/games</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/our-team</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/press</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/about</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/auth/confirm</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.oneteenonetree.org/leaderboard</loc><lastmod>2026-01-20T17:48:02.282Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>
