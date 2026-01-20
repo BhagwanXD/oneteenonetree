@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <p className="text-white/60">
-          Manage reviews, social posts, and site content.
+          Manage reviews, contact messages, and social posts.
         </p>
       </div>
 

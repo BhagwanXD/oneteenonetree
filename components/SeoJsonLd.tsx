@@ -49,6 +49,7 @@ export default function SeoJsonLd() {
           { '@type': 'SiteNavigationElement', name: 'Leaderboard', url: `${siteUrl}/leaderboard` },
           { '@type': 'SiteNavigationElement', name: 'Blog', url: `${siteUrl}/blog` },
           { '@type': 'SiteNavigationElement', name: 'Social', url: `${siteUrl}/social` },
+          { '@type': 'SiteNavigationElement', name: 'Contact', url: `${siteUrl}/contact` },
           { '@type': 'SiteNavigationElement', name: 'Games', url: `${siteUrl}/games` },
         ],
       },

@@ -78,6 +78,12 @@ export default function Footer() {
               >
                 Press
               </Link>
+              <Link
+                href="/contact"
+                className="text-white/70 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+              >
+                Contact
+              </Link>
             </div>
           </div>
 

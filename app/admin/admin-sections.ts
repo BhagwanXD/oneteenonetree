@@ -18,4 +18,10 @@ export const adminSections: AdminSection[] = [
     href: '/admin/social',
     description: 'Create, edit, and sync posts across social channels.',
   },
+  {
+    title: 'Contact submissions',
+    navLabel: 'Contact',
+    href: '/admin/contact',
+    description: 'Review and respond to contact form messages.',
+  },
 ]
