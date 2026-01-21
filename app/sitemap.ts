@@ -28,14 +28,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries = staticRoutes.map((path) => ({
     url: `${siteUrl}${path}`,
     lastModified: now,
-    changeFrequency: 'weekly',
+    changeFrequency: 'weekly' as const,
     priority: path === '/' ? 1 : 0.7,
   }))
 
   const teamEntries = visibleTeamMembers.map((member) => ({
     url: `${siteUrl}/our-team/${member.slug}`,
     lastModified: now,
-    changeFrequency: 'monthly',
+    changeFrequency: 'monthly' as const,
     priority: 0.6,
   }))
 
