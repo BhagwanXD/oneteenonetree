@@ -50,7 +50,10 @@ const moreMenuGroups: MoreMenuGroup[] = [
   },
   {
     label: 'Extras',
-    items: [{ label: 'Games', href: '/games', icon: 'games' }],
+    items: [
+      { label: 'Create', href: '/create', icon: 'edit' },
+      { label: 'Games', href: '/games', icon: 'games' },
+    ],
   },
 ] as const;
 

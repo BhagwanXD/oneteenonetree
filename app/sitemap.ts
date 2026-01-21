@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/social',
     '/leaderboard',
     '/blog',
+    '/create',
     '/get-involved',
     '/games',
     '/games/eco-tac-toe',

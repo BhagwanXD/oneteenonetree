@@ -13,6 +13,7 @@ import {
   MdOutlineDownload,
   MdOutlineEco,
   MdOutlineEmojiEvents,
+  MdOutlineEdit,
   MdOutlineExpandMore,
   MdOutlineGroups,
   MdOutlineHelpOutline,
@@ -75,6 +76,7 @@ const icons = [
   'delete',
   'download',
   'emoji_events',
+  'edit',
   'smartphone',
 ]
 
@@ -116,6 +118,7 @@ const fallbackMap = {
   delete: MdOutlineDelete,
   download: MdOutlineDownload,
   emoji_events: MdOutlineEmojiEvents,
+  edit: MdOutlineEdit,
   smartphone: MdOutlineSmartphone,
 }
 

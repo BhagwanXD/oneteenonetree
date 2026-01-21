@@ -9,6 +9,7 @@ import DeleteIcon from './material/DeleteIcon'
 import DownloadIcon from './material/DownloadIcon'
 import EcoIcon from './material/EcoIcon'
 import EmojiEventsIcon from './material/EmojiEventsIcon'
+import EditIcon from './material/EditIcon'
 import ExpandMoreIcon from './material/ExpandMoreIcon'
 import GroupsIcon from './material/GroupsIcon'
 import HelpIcon from './material/HelpIcon'
@@ -51,6 +52,7 @@ export {
   DownloadIcon,
   EcoIcon,
   EmojiEventsIcon,
+  EditIcon,
   ExpandMoreIcon,
   GroupsIcon,
   HelpIcon,
@@ -116,6 +118,7 @@ export const iconMap = {
   delete: DeleteIcon,
   download: DownloadIcon,
   award: EmojiEventsIcon,
+  edit: EditIcon,
   smartphone: SmartphoneIcon,
   instagram: InstagramIcon,
   linkedin: LinkedinIcon,
