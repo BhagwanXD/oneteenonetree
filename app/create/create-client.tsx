@@ -16,6 +16,9 @@ const defaultState: PosterState = {
 const getSizeLabel = (value: PosterState['size']) =>
   SIZE_OPTIONS.find((option) => option.value === value)?.label ?? 'Square 1080 x 1080'
 
+const getExportSize = (value: PosterState['size']) =>
+  SIZE_OPTIONS.find((option) => option.value === value) ?? SIZE_OPTIONS[0]
+
 export default function CreateClient() {
   const [state, setState] = useState<PosterState>(defaultState)
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
@@ -56,9 +59,18 @@ export default function CreateClient() {
     }
     const canvas = canvasRef.current
     if (!canvas) return
+    const { width, height } = getExportSize(state.size)
+    const exportCanvas = document.createElement('canvas')
+    exportCanvas.width = width
+    exportCanvas.height = height
+    const exportCtx = exportCanvas.getContext('2d')
+    if (!exportCtx) return
+    exportCtx.imageSmoothingEnabled = true
+    exportCtx.imageSmoothingQuality = 'high'
+    exportCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, width, height)
     const titleSlug = slugify(effectiveTitle)
     const fileName = `oneteenonetree-one-tree-${titleSlug || 'poster'}.png`
-    const dataUrl = canvas.toDataURL('image/png')
+    const dataUrl = exportCanvas.toDataURL('image/png')
     const link = document.createElement('a')
     link.href = dataUrl
     link.download = fileName

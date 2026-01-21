@@ -61,13 +61,20 @@ const drawCover = (
   ctx: CanvasRenderingContext2D,
   image: HTMLImageElement,
   width: number,
-  height: number
+  height: number,
+  focus: { focusX?: number; focusY?: number } = {}
 ) => {
+  const focusX = focus.focusX ?? 0.5
+  const focusY = focus.focusY ?? 0.2
   const scale = Math.max(width / image.width, height / image.height)
   const drawWidth = image.width * scale
   const drawHeight = image.height * scale
-  const dx = (width - drawWidth) / 2
-  const dy = (height - drawHeight) / 2
+  let dx = width / 2 - drawWidth * focusX
+  let dy = height / 2 - drawHeight * focusY
+  const minX = width - drawWidth
+  const minY = height - drawHeight
+  dx = Math.min(0, Math.max(dx, minX))
+  dy = Math.min(0, Math.max(dy, minY))
   ctx.drawImage(image, dx, dy, drawWidth, drawHeight)
 }
 
@@ -110,12 +117,14 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const { width, height } = getSize(state.size)
-    const scale = width / 1080
+    const { width: exportWidth, height: exportHeight } = getSize(state.size)
+    const dpr = window.devicePixelRatio || 1
+    const scale = exportWidth / 1080
     const padding = 72 * scale
 
-    canvas.width = width
-    canvas.height = height
+    canvas.width = exportWidth * dpr
+    canvas.height = exportHeight * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
     const logoSizes = {
       square: 120,
@@ -149,28 +158,35 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
     }
 
     const render = async () => {
-      ctx.clearRect(0, 0, width, height)
+      ctx.clearRect(0, 0, exportWidth, exportHeight)
 
       if (photoUrl) {
         const photo = new Image()
         photo.src = photoUrl
         await photo.decode().catch(() => null)
         if (photo.complete && photo.naturalWidth > 0) {
-          drawCover(ctx, photo, width, height)
+          drawCover(ctx, photo, exportWidth, exportHeight, { focusX: 0.5, focusY: 0.2 })
         }
       } else {
-        const gradient = ctx.createLinearGradient(0, 0, width, height)
+        const gradient = ctx.createLinearGradient(0, 0, exportWidth, exportHeight)
         gradient.addColorStop(0, BRAND_STYLE.gradient[0])
         gradient.addColorStop(1, BRAND_STYLE.gradient[1])
         ctx.fillStyle = gradient
-        ctx.fillRect(0, 0, width, height)
+        ctx.fillRect(0, 0, exportWidth, exportHeight)
       }
 
-      const overlay = ctx.createLinearGradient(0, 0, 0, height)
-      overlay.addColorStop(0, 'rgba(6, 18, 12, 0.35)')
-      overlay.addColorStop(1, 'rgba(5, 12, 8, 0.88)')
-      ctx.fillStyle = overlay
-      ctx.fillRect(0, 0, width, height)
+      const overlayVertical = ctx.createLinearGradient(0, 0, 0, exportHeight)
+      overlayVertical.addColorStop(0, 'rgba(6, 18, 12, 0.35)')
+      overlayVertical.addColorStop(1, 'rgba(5, 12, 8, 0.9)')
+      ctx.fillStyle = overlayVertical
+      ctx.fillRect(0, 0, exportWidth, exportHeight)
+
+      const overlayLeft = ctx.createLinearGradient(0, 0, exportWidth, 0)
+      overlayLeft.addColorStop(0, 'rgba(5, 12, 8, 0.85)')
+      overlayLeft.addColorStop(0.6, 'rgba(5, 12, 8, 0.35)')
+      overlayLeft.addColorStop(1, 'rgba(5, 12, 8, 0.1)')
+      ctx.fillStyle = overlayLeft
+      ctx.fillRect(0, 0, exportWidth, exportHeight)
 
       const logo = new Image()
       logo.src = '/logo.png'
@@ -198,7 +214,18 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
       ctx.fillText('OneTeenOneTree', brandTextX, brandTextY)
 
       const contentStart = padding + logoBox + 46 * scale
-      const contentWidth = width - padding * 2
+      const contentWidth = Math.min(exportWidth * 0.66, exportWidth - padding * 2)
+      const panelX = padding - 12 * scale
+      const panelY = contentStart - 24 * scale
+      const safeBottomY = exportHeight - padding - 220 * scale
+      const panelHeight = Math.max(180 * scale, safeBottomY - panelY)
+      const panelWidth = contentWidth + 56 * scale
+      ctx.fillStyle = 'rgba(4, 12, 8, 0.45)'
+      drawRoundedRect(ctx, panelX, panelY, panelWidth, panelHeight, 24 * scale)
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+      ctx.lineWidth = 1 * scale
+      ctx.stroke()
       let cursorY = contentStart
 
       ctx.textBaseline = 'top'
@@ -234,7 +261,7 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
       const pledgeName = state.name.trim().slice(0, 60)
       if (pledgeName) {
         const nameText = `Pledged by ${pledgeName}`
-        const nameMaxWidth = width - padding * 2 - 40 * scale
+        const nameMaxWidth = contentWidth
         const baseNameSize = nameSizes[state.size] * scale
         const minNameSize = Math.max(36, baseNameSize - 16)
         const finalNameSize = fitText(ctx, nameText, nameMaxWidth, baseNameSize, minNameSize)
@@ -246,7 +273,7 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
         const chipWidth = textWidth + chipPaddingX * 2
         const chipHeight = finalNameSize + chipPaddingY * 2
 
-        const chipY = height - padding - 170 * scale
+        const chipY = exportHeight - padding - 190 * scale
         ctx.fillStyle = 'rgba(0, 208, 132, 0.9)'
         drawRoundedRect(ctx, padding, chipY, chipWidth, chipHeight, 999)
         ctx.fill()
@@ -255,15 +282,18 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
         ctx.fillText(nameText, padding + chipPaddingX, chipY + chipHeight / 2)
       }
 
-      const sdgLabelY = height - padding - 100 * scale
+      const sdgLabelY = exportHeight - padding - 110 * scale
       ctx.textBaseline = 'top'
       ctx.fillStyle = 'rgba(255,255,255,0.75)'
       ctx.font = `500 ${Math.round(18 * scale)}px ui-sans-serif, system-ui`
       ctx.fillText('Aligned with the UN SDGs', padding, sdgLabelY)
 
       const sdgContainerY = sdgLabelY + 30 * scale
-      const sdgContainerHeight = 70 * scale
-      const sdgContainerWidth = width - padding * 2
+      const sdgContainerHeight = 72 * scale
+      const iconSize = (state.size === 'story' ? 46 : state.size === 'portrait' ? 42 : 40) * scale
+      const gap = 12 * scale
+      const totalIconsWidth = SDG_ICONS.length * iconSize + (SDG_ICONS.length - 1) * gap
+      const sdgContainerWidth = totalIconsWidth + 32 * scale
       ctx.fillStyle = 'rgba(255,255,255,0.08)'
       drawRoundedRect(
         ctx,
@@ -275,9 +305,6 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
       )
       ctx.fill()
 
-      const iconSize = 36 * scale
-      const gap = 12 * scale
-      const totalIconsWidth = SDG_ICONS.length * iconSize + (SDG_ICONS.length - 1) * gap
       let iconX = padding + (sdgContainerWidth - totalIconsWidth) / 2
       const iconY = sdgContainerY + (sdgContainerHeight - iconSize) / 2
 
@@ -298,16 +325,7 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
         iconX += iconSize + gap
       })
 
-      // Admin note: place the official UN logo at /public/brand/un-logo.png if permitted.
-      const unLogo = new Image()
-      unLogo.src = '/brand/un-logo.png'
-      await unLogo.decode().catch(() => null)
-      if (unLogo.complete && unLogo.naturalWidth > 0) {
-        const unSize = 42 * scale
-        ctx.drawImage(unLogo, width - padding - unSize, sdgLabelY - 8 * scale, unSize, unSize)
-      }
-
-      const footerY = height - padding + 6 * scale
+      const footerY = exportHeight - padding + 6 * scale
       ctx.strokeStyle = 'rgba(255,255,255,0.4)'
       ctx.lineWidth = 1.4 * scale
       ctx.fillStyle = BRAND_STYLE.accent
