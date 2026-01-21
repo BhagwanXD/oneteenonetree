@@ -1,7 +1,14 @@
 'use client'
 
 import { useEffect } from 'react'
-import { BRAND_STYLE, LOCKED_COPY, SDG_ICONS, SIZE_OPTIONS } from '../constants'
+import {
+  BRAND_STYLE,
+  LOCKED_COPY,
+  SDG_ICONS,
+  SDG_ICON_PATHS,
+  SIZE_OPTIONS,
+  UN_LOGO_CANDIDATES,
+} from '../constants'
 import type { PosterState } from '../types'
 
 type PosterCanvasProps = {
@@ -110,6 +117,14 @@ const fitText = (
   return currentSize
 }
 
+const loadImage = async (src: string) => {
+  const img = new Image()
+  img.src = src
+  await img.decode().catch(() => null)
+  if (img.complete && img.naturalWidth > 0) return img
+  return null
+}
+
 export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanvasProps) {
   useEffect(() => {
     const canvas = canvasRef.current
@@ -129,19 +144,14 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
     ctx.imageSmoothingQuality = 'high'
 
     const logoSizes = {
-      square: 130,
-      portrait: 140,
-      story: 160,
-    }
-    const brandTextSizes = {
-      square: 42,
-      portrait: 46,
-      story: 52,
+      square: 150,
+      portrait: 170,
+      story: 190,
     }
     const titleSizes = {
-      square: 60,
-      portrait: 66,
-      story: 74,
+      square: 64,
+      portrait: 70,
+      story: 78,
     }
     const subtitleSizes = {
       square: 30,
@@ -154,19 +164,28 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
       story: 26,
     }
     const nameSizes = {
-      square: 60,
-      portrait: 64,
-      story: 72,
+      square: 56,
+      portrait: 62,
+      story: 70,
+    }
+    const sdgLabelSizes = {
+      square: 18,
+      portrait: 18,
+      story: 20,
+    }
+    const footerSizes = {
+      square: 18,
+      portrait: 18,
+      story: 20,
     }
 
     const render = async () => {
       ctx.clearRect(0, 0, exportWidth, exportHeight)
+      const centerX = exportWidth / 2
 
       if (photoUrl) {
-        const photo = new Image()
-        photo.src = photoUrl
-        await photo.decode().catch(() => null)
-        if (photo.complete && photo.naturalWidth > 0) {
+        const photo = await loadImage(photoUrl)
+        if (photo) {
           drawCover(ctx, photo, exportWidth, exportHeight, { focusX: 0.5, focusY: 0.2 })
         }
       } else {
@@ -178,136 +197,147 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
       }
 
       const overlayVertical = ctx.createLinearGradient(0, 0, 0, exportHeight)
-      overlayVertical.addColorStop(0, 'rgba(6, 18, 12, 0.35)')
-      overlayVertical.addColorStop(1, 'rgba(5, 12, 8, 0.9)')
+      overlayVertical.addColorStop(0, 'rgba(6, 18, 12, 0.55)')
+      overlayVertical.addColorStop(0.45, 'rgba(6, 18, 12, 0.45)')
+      overlayVertical.addColorStop(1, 'rgba(5, 12, 8, 0.82)')
       ctx.fillStyle = overlayVertical
       ctx.fillRect(0, 0, exportWidth, exportHeight)
 
-      const overlayLeft = ctx.createLinearGradient(0, 0, exportWidth, 0)
-      overlayLeft.addColorStop(0, 'rgba(5, 12, 8, 0.85)')
-      overlayLeft.addColorStop(0.6, 'rgba(5, 12, 8, 0.35)')
-      overlayLeft.addColorStop(1, 'rgba(5, 12, 8, 0.1)')
-      ctx.fillStyle = overlayLeft
+      const overlayCenter = ctx.createRadialGradient(
+        centerX,
+        exportHeight * 0.28,
+        exportWidth * 0.15,
+        centerX,
+        exportHeight * 0.28,
+        exportWidth * 0.8
+      )
+      overlayCenter.addColorStop(0, 'rgba(5, 12, 8, 0.35)')
+      overlayCenter.addColorStop(1, 'rgba(5, 12, 8, 0)')
+      ctx.fillStyle = overlayCenter
       ctx.fillRect(0, 0, exportWidth, exportHeight)
 
-      const logo = new Image()
-      logo.src = '/logo.png'
-      await logo.decode().catch(() => null)
+      const logoCandidates = ['/brand/logo.png', '/logo.png']
+      let logo: HTMLImageElement | null = null
+      for (const src of logoCandidates) {
+        logo = await loadImage(src)
+        if (logo) break
+      }
       const logoSize = logoSizes[state.size] * scale
-      const logoBox = logoSize + 24 * scale
-      ctx.fillStyle = 'rgba(0,0,0,0.35)'
-      drawRoundedRect(ctx, padding, padding, logoBox, logoBox, 20 * scale)
-      ctx.fill()
-      if (logo.complete && logo.naturalWidth > 0) {
-        ctx.drawImage(
-          logo,
-          padding + (logoBox - logoSize) / 2,
-          padding + (logoBox - logoSize) / 2,
-          logoSize,
-          logoSize
-        )
+      const logoY = padding
+      if (logo) {
+        ctx.save()
+        ctx.shadowColor = 'rgba(0,0,0,0.35)'
+        ctx.shadowBlur = 18 * scale
+        ctx.shadowOffsetY = 4 * scale
+        ctx.drawImage(logo, centerX - logoSize / 2, logoY, logoSize, logoSize)
+        ctx.restore()
       }
 
-      ctx.fillStyle = '#ffffff'
-      ctx.textBaseline = 'middle'
-      ctx.font = `700 ${Math.round(brandTextSizes[state.size] * scale)}px ui-sans-serif, system-ui`
-      const brandTextX = padding + logoBox + 18 * scale
-      const brandTextY = padding + logoBox / 2
-      ctx.fillText('OneTeenOneTree', brandTextX, brandTextY)
-
-      const contentStart = padding + logoBox + 42 * scale
-      const contentWidth = Math.min(exportWidth * 0.66, exportWidth - padding * 2)
-      let cursorY = contentStart
+      const contentWidth = exportWidth - padding * 2
+      let cursorY = logoY + logoSize + 24 * scale
 
       ctx.textBaseline = 'top'
+      ctx.textAlign = 'center'
       ctx.fillStyle = '#ffffff'
+      ctx.shadowColor = 'rgba(0,0,0,0.45)'
+      ctx.shadowBlur = 16 * scale
+      ctx.shadowOffsetY = 4 * scale
       ctx.font = `700 ${Math.round(titleSizes[state.size] * scale)}px ui-sans-serif, system-ui`
       const titleLines = clampLines(wrapText(ctx, LOCKED_COPY.title, contentWidth), 2)
       const titleLineHeight = (titleSizes[state.size] + 12) * scale
       titleLines.forEach((line) => {
-        ctx.fillText(line, padding, cursorY)
+        ctx.fillText(line, centerX, cursorY)
         cursorY += titleLineHeight
       })
 
-      ctx.fillStyle = 'rgba(255,255,255,0.85)'
+      ctx.fillStyle = 'rgba(255,255,255,0.88)'
       ctx.font = `500 ${Math.round(subtitleSizes[state.size] * scale)}px ui-sans-serif, system-ui`
-      const subtitleLines = clampLines(wrapText(ctx, LOCKED_COPY.subtitle, contentWidth), 3)
+      const subtitleLines = clampLines(wrapText(ctx, LOCKED_COPY.subtitle, contentWidth), 2)
       const subtitleLineHeight = (subtitleSizes[state.size] + 10) * scale
-      cursorY += 6 * scale
+      cursorY += 8 * scale
       subtitleLines.forEach((line) => {
-        ctx.fillText(line, padding, cursorY)
+        ctx.fillText(line, centerX, cursorY)
         cursorY += subtitleLineHeight
       })
 
-      ctx.fillStyle = 'rgba(255,255,255,0.72)'
+      ctx.fillStyle = 'rgba(255,255,255,0.75)'
       ctx.font = `400 ${Math.round(descSizes[state.size] * scale)}px ui-sans-serif, system-ui`
-      const descLines = clampLines(wrapText(ctx, LOCKED_COPY.description, contentWidth), 3)
+      const descLines = clampLines(wrapText(ctx, LOCKED_COPY.description, contentWidth), 2)
       const descLineHeight = (descSizes[state.size] + 8) * scale
-      cursorY += 6 * scale
+      cursorY += 10 * scale
       descLines.forEach((line) => {
-        ctx.fillText(line, padding, cursorY)
+        ctx.fillText(line, centerX, cursorY)
         cursorY += descLineHeight
       })
 
-      const sdgLabelY = exportHeight - padding - 110 * scale
-      ctx.textBaseline = 'top'
-      ctx.fillStyle = 'rgba(255,255,255,0.75)'
-      ctx.font = `500 ${Math.round(18 * scale)}px ui-sans-serif, system-ui`
-      ctx.fillText('Aligned with the UN SDGs', padding, sdgLabelY)
-
-      const sdgContainerY = sdgLabelY + 30 * scale
-      const sdgContainerHeight = 72 * scale
+      const footerSize = footerSizes[state.size] * scale
+      const footerY = exportHeight - padding
+      const sdgLabelSize = sdgLabelSizes[state.size] * scale
       const iconSize = (state.size === 'story' ? 46 : state.size === 'portrait' ? 42 : 40) * scale
       const gap = 12 * scale
+      const unSize = 36 * scale
       const totalIconsWidth = SDG_ICONS.length * iconSize + (SDG_ICONS.length - 1) * gap
-      const sdgContainerWidth = totalIconsWidth + 32 * scale
-      ctx.fillStyle = 'rgba(255,255,255,0.08)'
-      drawRoundedRect(
-        ctx,
-        padding,
-        sdgContainerY,
-        sdgContainerWidth,
-        sdgContainerHeight,
-        18 * scale
-      )
-      ctx.fill()
+      const sdgRowWidth = totalIconsWidth + unSize + gap * 2
+      const sdgRowY = footerY - footerSize / 2 - 24 * scale - iconSize
+      const sdgLabelY = sdgRowY - sdgLabelSize - 10 * scale
 
       const pledgeName = state.name.trim().slice(0, 60)
       if (pledgeName) {
-        const nameText = `Pledged by ${pledgeName}`
+        const nameText = pledgeName
         const nameMaxWidth = contentWidth
         const baseNameSize = nameSizes[state.size] * scale
-        const minNameSize = Math.max(36, baseNameSize - 16)
+        const minNameSize = Math.max(40, baseNameSize - 16)
         const finalNameSize = fitText(ctx, nameText, nameMaxWidth, baseNameSize, minNameSize)
-
-        const chipPaddingX = 26 * scale
-        const chipPaddingY = 16 * scale
         ctx.font = `700 ${Math.round(finalNameSize)}px ui-sans-serif, system-ui`
-        const textWidth = ctx.measureText(nameText).width
-        const chipWidth = textWidth + chipPaddingX * 2
-        const chipHeight = finalNameSize + chipPaddingY * 2
-
-        const chipY = sdgLabelY - chipHeight - 18 * scale
-        ctx.fillStyle = 'rgba(0, 208, 132, 0.9)'
-        drawRoundedRect(ctx, padding, chipY, chipWidth, chipHeight, 999)
-        ctx.fill()
-        ctx.fillStyle = '#0b1510'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(nameText, padding + chipPaddingX, chipY + chipHeight / 2)
+        ctx.fillStyle = '#ffffff'
+        const nameLineHeight = finalNameSize + 8 * scale
+        const nameY = Math.min(
+          cursorY + 24 * scale,
+          sdgLabelY - nameLineHeight - 18 * scale
+        )
+        ctx.textBaseline = 'top'
+        ctx.fillText(nameText, centerX, nameY)
       }
 
-      let iconX = padding + (sdgContainerWidth - totalIconsWidth) / 2
-      const iconY = sdgContainerY + (sdgContainerHeight - iconSize) / 2
+      ctx.textBaseline = 'top'
+      ctx.fillStyle = 'rgba(255,255,255,0.8)'
+      ctx.font = `500 ${Math.round(sdgLabelSize)}px ui-sans-serif, system-ui`
+      ctx.fillText('Aligned with the UN SDGs', centerX, sdgLabelY)
+
+      ctx.shadowColor = 'transparent'
+      ctx.shadowBlur = 0
+      ctx.shadowOffsetX = 0
+      ctx.shadowOffsetY = 0
+
+      const sdgRowX = centerX - sdgRowWidth / 2
+      let iconX = sdgRowX + unSize + gap
+      const iconY = sdgRowY
 
       const iconImages = await Promise.all(
-        SDG_ICONS.map(async (number) => {
-          const img = new Image()
-          img.src = `/sdgs/sdg-${number}.svg`
-          await img.decode().catch(() => null)
-          if (img.complete && img.naturalWidth > 0) return img
-          return null
+        SDG_ICON_PATHS.map(async (path) => {
+          return await loadImage(path)
         })
       )
+
+      let unLogo: HTMLImageElement | null = null
+      for (const src of UN_LOGO_CANDIDATES) {
+        unLogo = await loadImage(src)
+        if (unLogo) break
+      }
+
+      if (unLogo) {
+        ctx.drawImage(unLogo, sdgRowX, iconY + (iconSize - unSize) / 2, unSize, unSize)
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,0.2)'
+        ctx.beginPath()
+        ctx.arc(sdgRowX + unSize / 2, iconY + iconSize / 2, unSize / 2, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = 'rgba(255,255,255,0.9)'
+        ctx.font = `700 ${Math.round(12 * scale)}px ui-sans-serif, system-ui`
+        ctx.textBaseline = 'middle'
+        ctx.fillText('UN', sdgRowX + unSize / 2, iconY + iconSize / 2)
+        ctx.textBaseline = 'top'
+      }
 
       iconImages.forEach((img, index) => {
         if (img) {
@@ -322,33 +352,34 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
           ctx.textBaseline = 'middle'
           ctx.textAlign = 'center'
           ctx.fillText(label, iconX + iconSize / 2, iconY + iconSize / 2)
-          ctx.textAlign = 'left'
+          ctx.textAlign = 'center'
         }
         iconX += iconSize + gap
       })
 
-      // Admin note: place the official UN logo at /public/brand/un-logo.png if permitted.
-      const unLogo = new Image()
-      unLogo.src = '/brand/un-logo.png'
-      await unLogo.decode().catch(() => null)
-      if (unLogo.complete && unLogo.naturalWidth > 0) {
-        const unSize = 44 * scale
-        const unX = Math.min(
-          padding + sdgContainerWidth + 16 * scale,
-          exportWidth - padding - unSize
-        )
-        ctx.drawImage(unLogo, unX, sdgLabelY - 6 * scale, unSize, unSize)
-      }
+      // Admin note: place the official UN logo at /public/brand/un-logo.svg if permitted.
 
-      const footerY = exportHeight - padding + 6 * scale
+      ctx.shadowColor = 'rgba(0,0,0,0.35)'
+      ctx.shadowBlur = 12 * scale
+      ctx.shadowOffsetY = 3 * scale
+
       ctx.strokeStyle = 'rgba(255,255,255,0.4)'
       ctx.lineWidth = 1.4 * scale
       ctx.fillStyle = BRAND_STYLE.accent
-      drawLeaf(ctx, padding, footerY - 8 * scale, 16 * scale)
-      ctx.font = `500 ${Math.round(18 * scale)}px ui-sans-serif, system-ui`
-      ctx.fillStyle = 'rgba(255,255,255,0.85)'
+      const footerText = 'oneteenonetree.org'
+      ctx.font = `500 ${Math.round(footerSize)}px ui-sans-serif, system-ui`
+      const footerTextWidth = ctx.measureText(footerText).width
+      const leafSize = 16 * scale
       ctx.textBaseline = 'middle'
-      ctx.fillText('oneteenonetree.org', padding + 22 * scale, footerY)
+      const leafX = centerX - footerTextWidth / 2 - leafSize - 10 * scale
+      drawLeaf(ctx, leafX, footerY - 8 * scale, leafSize)
+      ctx.fillStyle = 'rgba(255,255,255,0.85)'
+      ctx.textAlign = 'center'
+      ctx.fillText(footerText, centerX, footerY)
+      ctx.shadowColor = 'transparent'
+      ctx.shadowBlur = 0
+      ctx.shadowOffsetX = 0
+      ctx.shadowOffsetY = 0
     }
 
     render()

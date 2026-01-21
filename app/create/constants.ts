@@ -12,9 +12,10 @@ export const SIZE_OPTIONS: Array<{
 ]
 
 export const LOCKED_COPY = {
-  title: 'OneTeenOneTree = One Tree',
-  subtitle: 'Take the pledge. Plant a tree. Inspire your friends.',
-  description: 'Share this to your story and tag @OneTeenOneTree to grow the movement.',
+  title: 'OneTeenOneTree',
+  subtitle: 'One pledge. One tree. One future.',
+  description:
+    'A youth-led movement turning pledges into real trees through community action.',
 }
 
 export const BRAND_STYLE = {
@@ -23,3 +24,7 @@ export const BRAND_STYLE = {
 }
 
 export const SDG_ICONS = ['6', '7', '11', '12', '13', '15', '17']
+
+export const SDG_ICON_PATHS = SDG_ICONS.map((number) => `/sdgs/sdg-${number}.svg`)
+
+export const UN_LOGO_CANDIDATES = ['/brand/un-logo.svg', '/brand/un-logo.png']

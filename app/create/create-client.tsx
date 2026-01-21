@@ -44,17 +44,12 @@ export default function CreateClient() {
   }
 
   const missingName = !state.name.trim()
-  const missingPhoto = !photoUrl
-  const canExport = !(missingName && missingPhoto)
+  const canExport = !missingName
   const effectiveTitle = LOCKED_COPY.title
 
   const handleDownload = () => {
     if (!canExport) {
-      setNotice('Add your name or a photo to export.')
-      return
-    }
-    if (!effectiveTitle.trim()) {
-      setNotice('Add a title before exporting.')
+      setNotice('Please add your name to export.')
       return
     }
     const canvas = canvasRef.current
@@ -69,7 +64,7 @@ export default function CreateClient() {
     exportCtx.imageSmoothingQuality = 'high'
     exportCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, width, height)
     const titleSlug = slugify(effectiveTitle)
-    const fileName = `oneteenonetree-one-tree-${titleSlug || 'poster'}.png`
+    const fileName = `oneteenonetree-story-card-${titleSlug || 'card'}.png`
     const dataUrl = exportCanvas.toDataURL('image/png')
     const link = document.createElement('a')
     link.href = dataUrl
@@ -82,10 +77,10 @@ export default function CreateClient() {
       <section className="py-12 hero">
         <div className="container text-center max-w-3xl mx-auto space-y-4">
           <h1 className="text-4xl md:text-5xl font-extrabold">
-            Create your OneTeenOneTree poster
+            Create your OneTeenOneTree story card
           </h1>
           <p className="text-white/70 text-lg">
-            Generate a share-ready pledge poster in seconds.
+            Generate a share-ready story card in seconds.
           </p>
         </div>
       </section>
@@ -101,7 +96,6 @@ export default function CreateClient() {
             hasPhoto={Boolean(photoUrl)}
             canExport={canExport}
             missingName={missingName}
-            missingPhoto={missingPhoto}
           />
 
           <div className="space-y-6">
@@ -119,14 +113,6 @@ export default function CreateClient() {
                   Size: {getSizeLabel(state.size)}
                 </span>
               </div>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 space-y-2 text-sm text-white/60">
-              <p className="font-semibold text-white">Design tips</p>
-              <p>
-                Use a clear portrait and keep your name readable. The poster keeps safe margins for
-                stories, posts, and web.
-              </p>
             </div>
           </div>
         </div>
