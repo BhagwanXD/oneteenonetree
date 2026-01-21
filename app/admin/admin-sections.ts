@@ -3,6 +3,7 @@ export type AdminSection = {
   navLabel: string
   href: string
   description: string
+  icon: 'checklist' | 'settings' | 'mail' | 'upload'
 }
 
 export const adminSections: AdminSection[] = [
@@ -11,23 +12,27 @@ export const adminSections: AdminSection[] = [
     navLabel: 'Review',
     href: '/admin/review',
     description: 'Approve, reject, or request more proof for plantings.',
+    icon: 'checklist',
   },
   {
     title: 'Social manager',
     navLabel: 'Social',
     href: '/admin/social',
     description: 'Create, edit, and sync posts across social channels.',
+    icon: 'settings',
   },
   {
     title: 'Contact submissions',
     navLabel: 'Contact',
     href: '/admin/contact',
     description: 'Review and respond to contact form messages.',
+    icon: 'mail',
   },
   {
     title: 'Gallery manager',
     navLabel: 'Gallery',
     href: '/admin/gallery',
     description: 'Upload and organize public gallery photos.',
+    icon: 'upload',
   },
 ]

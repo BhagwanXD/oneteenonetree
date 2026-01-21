@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { FaFileCsv, FaTrash, FaUpload } from 'react-icons/fa'
 import { parseGalleryCsv } from '@/lib/gallery/csv'
+import Icon from '@/components/Icon'
 
 type GalleryItem = {
   id: string
@@ -379,7 +379,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
 
       <div className="card space-y-4">
         <div className="flex items-center gap-3 text-lg font-semibold">
-          <FaUpload aria-hidden="true" />
+          <Icon name="upload" size={18} aria-hidden="true" />
           Upload photos
         </div>
         <div className="grid gap-4 md:grid-cols-2">
@@ -523,7 +523,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
 
       <div className="card space-y-4">
         <div className="flex items-center gap-3 text-lg font-semibold">
-          <FaFileCsv aria-hidden="true" />
+          <Icon name="download" size={18} aria-hidden="true" />
           Bulk import via CSV
         </div>
         <p className="text-sm text-white/60">
@@ -714,7 +714,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
                     disabled={busyId === item.id}
                     className="px-3 py-2 rounded-lg bg-red-600/80 hover:bg-red-500 text-sm text-white disabled:opacity-60 inline-flex items-center gap-2"
                   >
-                    <FaTrash aria-hidden="true" />
+                    <Icon name="delete" size={16} aria-hidden="true" />
                     Delete
                   </button>
                 </div>

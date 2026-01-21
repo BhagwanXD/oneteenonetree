@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { adminSections } from './admin-sections'
+import Icon from '@/components/Icon'
 
 export const metadata = {
   title: 'Admin Dashboard - OneTeenOneTree',
@@ -32,6 +33,7 @@ export default async function AdminDashboardPage() {
       <div className="flex flex-wrap gap-3">
         {adminSections.map((section) => (
           <Link key={section.href} href={section.href} className="btn">
+            <Icon name={section.icon} size={16} aria-hidden="true" />
             Go to {section.navLabel}
           </Link>
         ))}
@@ -41,11 +43,15 @@ export default async function AdminDashboardPage() {
         {adminSections.map((section) => (
           <div key={section.href} className="card flex flex-col justify-between gap-6">
             <div className="space-y-2">
-              <h2 className="text-xl font-semibold">{section.title}</h2>
+              <h2 className="text-xl font-semibold inline-flex items-center gap-2">
+                <Icon name={section.icon} size={18} aria-hidden="true" />
+                {section.title}
+              </h2>
               <p className="text-white/60">{section.description}</p>
             </div>
             <Link href={section.href} className="btn w-fit">
-              Open
+              <span>Open</span>
+              <Icon name="arrowForward" size={16} aria-hidden="true" />
             </Link>
           </div>
         ))}

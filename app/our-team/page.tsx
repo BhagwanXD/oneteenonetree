@@ -1,8 +1,8 @@
 import TeamCard from './TeamCard'
-import { FaHandshake, FaLeaf, FaMapMarkerAlt, FaStar, FaUsers } from 'react-icons/fa'
 import { visibleTeamMembers } from '@/data/team'
 import Link from 'next/link'
 import { buildMetadata } from '@/lib/seo'
+import Icon from '@/components/Icon'
 
 export const metadata = buildMetadata({
   title: 'Our Team',
@@ -37,7 +37,7 @@ export default function OurTeamPage() {
             <div className="card p-5 flex flex-col h-full gap-4 border-white/15 bg-white/[0.04]">
               <div className="space-y-3">
                 <div className="h-12 w-12 rounded-2xl bg-emerald-600/20 border border-emerald-400/30 flex items-center justify-center text-emerald-200 text-xl">
-                  <FaUsers aria-hidden="true" />
+                  <Icon name="volunteer" size={22} aria-hidden="true" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">Join the Team</h3>
@@ -60,13 +60,15 @@ export default function OurTeamPage() {
               </ul>
               <div className="mt-auto flex flex-wrap items-center gap-3">
                 <Link href="/contact" className="btn">
-                  Get involved
+                  <span>Get involved</span>
+                  <Icon name="arrowForward" size={16} aria-hidden="true" />
                 </Link>
                 <Link
                   href="/get-involved"
-                  className="text-sm text-white/60 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+                  className="text-sm text-white/60 hover:text-white transition inline-flex items-center gap-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
                 >
-                  Learn more
+                  <span>Learn more</span>
+                  <Icon name="arrowForward" size={14} aria-hidden="true" />
                 </Link>
               </div>
             </div>
@@ -74,7 +76,7 @@ export default function OurTeamPage() {
             <div className="card p-5 flex flex-col justify-between gap-4 border-white/15 bg-white/[0.04]">
               <div className="space-y-3">
                 <div className="h-12 w-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white/80 text-xl">
-                  <FaStar aria-hidden="true" />
+                  <Icon name="award" size={22} aria-hidden="true" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-white">More team members</h3>
@@ -96,17 +98,17 @@ export default function OurTeamPage() {
               {
                 title: 'Community-led',
                 detail: 'Local teams co-create each drive with residents and schools.',
-                icon: <FaLeaf aria-hidden="true" />,
+                icon: <Icon name="groups" size={22} aria-hidden="true" />,
               },
               {
                 title: 'Volunteer-driven',
                 detail: 'Students and mentors run logistics, outreach, and care.',
-                icon: <FaHandshake aria-hidden="true" />,
+                icon: <Icon name="volunteer" size={22} aria-hidden="true" />,
               },
               {
                 title: 'Local action',
                 detail: 'We focus on real impact in neighborhoods and campuses.',
-                icon: <FaMapMarkerAlt aria-hidden="true" />,
+                icon: <Icon name="location" size={22} aria-hidden="true" />,
               },
             ].map((item) => (
               <div key={item.title} className="card p-5 text-center">

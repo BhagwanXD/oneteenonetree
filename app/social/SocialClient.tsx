@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { FaInstagram, FaLinkedin } from "react-icons/fa";
+import Icon from "@/components/Icon";
 
 type SocialPost = {
   id: string;
@@ -17,16 +17,16 @@ type SocialPost = {
 const platformConfig = {
   instagram: {
     label: "Instagram",
-    icon: <FaInstagram className="text-base" />,
-    iconLarge: <FaInstagram className="text-3xl" />,
+    icon: <Icon name="instagram" size={16} aria-hidden="true" />,
+    iconLarge: <Icon name="instagram" size={28} aria-hidden="true" />,
     badge: "border-pink-500/40 bg-pink-600/20 text-pink-200",
     fallback: "from-pink-500/30 via-rose-500/10 to-orange-500/20",
     cta: "Open on Instagram",
   },
   linkedin: {
     label: "LinkedIn",
-    icon: <FaLinkedin className="text-base" />,
-    iconLarge: <FaLinkedin className="text-3xl" />,
+    icon: <Icon name="linkedin" size={16} aria-hidden="true" />,
+    iconLarge: <Icon name="linkedin" size={28} aria-hidden="true" />,
     badge: "border-sky-500/40 bg-sky-600/20 text-sky-200",
     fallback: "from-sky-500/30 via-cyan-500/10 to-blue-500/20",
     cta: "Open on LinkedIn",

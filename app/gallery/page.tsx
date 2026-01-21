@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import GalleryClient from './gallery-client'
 import { buildMetadata } from '@/lib/seo'
+import Icon from '@/components/Icon'
 
 export const metadata = buildMetadata({
   title: 'Gallery',
@@ -67,7 +68,12 @@ export default async function GalleryPage() {
     <div className="min-h-[calc(100vh-8rem)]">
       <section className="py-12 hero">
         <div className="container text-center max-w-2xl mx-auto space-y-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold">Gallery</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold">
+            <span className="inline-flex items-center justify-center gap-2">
+              <Icon name="camera" size={28} aria-hidden="true" />
+              Gallery
+            </span>
+          </h1>
           <p className="text-white/70 text-lg">
             Real moments from OneTeenOneTree drives, student-led impact, and verified plantation
             work across communities.

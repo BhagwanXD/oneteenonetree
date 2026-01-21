@@ -1,5 +1,6 @@
 import { pressItems } from '@/data/press'
 import { buildMetadata } from '@/lib/seo'
+import Icon from '@/components/Icon'
 
 export const metadata = buildMetadata({
   title: 'Press',
@@ -32,7 +33,12 @@ export default function PressPage() {
       <section className="py-16">
         <div className="container">
           <div className="text-center max-w-2xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-extrabold">Press & Media</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold">
+              <span className="inline-flex items-center gap-2">
+                <Icon name="info" size={28} aria-hidden="true" />
+                Press & Media
+              </span>
+            </h1>
             <p className="text-white/70 mt-3 text-lg">
               News, announcements, and resources for journalists covering OneTeenOneTree.
             </p>
@@ -65,9 +71,10 @@ export default function PressPage() {
                     href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-lg font-semibold text-white hover:text-[var(--acc)] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+                    className="text-lg font-semibold text-white hover:text-[var(--acc)] transition inline-flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
                   >
                     {item.title}
+                    <Icon name="externalLink" size={16} aria-hidden="true" />
                   </a>
                   {item.summary && <p className="text-sm text-white/70">{item.summary}</p>}
                 </article>

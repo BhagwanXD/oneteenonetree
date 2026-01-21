@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { FaCheckCircle, FaLock, FaMobileAlt } from 'react-icons/fa'
+import Icon from '@/components/Icon'
 
 const breakdown = [
   { label: 'Saplings & materials', value: '40%' },
@@ -80,7 +80,12 @@ export default function DonateClient() {
       <section id="payment-details" className="py-16">
         <div className="container">
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold">Donate via UPI</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">
+              <span className="inline-flex items-center gap-2">
+                <Icon name="volunteer" size={26} aria-hidden="true" />
+                Donate via UPI
+              </span>
+            </h2>
             <p className="text-white/70 mt-2">
               Scan the QR or copy the UPI ID.
             </p>
@@ -92,7 +97,12 @@ export default function DonateClient() {
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <p className="text-xs uppercase tracking-wider text-white/60">UPI Payment</p>
-                    <h3 className="text-2xl font-semibold text-white">Donate via UPI</h3>
+                    <h3 className="text-2xl font-semibold text-white">
+                      <span className="inline-flex items-center gap-2">
+                        <Icon name="volunteer" size={20} aria-hidden="true" />
+                        Donate via UPI
+                      </span>
+                    </h3>
                     <p className="text-sm text-white/60">Scan the QR or copy the UPI ID.</p>
                   </div>
 
@@ -114,8 +124,9 @@ export default function DonateClient() {
                       <a
                         href="/images/donate/upi-qr.png"
                         download
-                        className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition"
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition"
                       >
+                        <Icon name="download" size={16} aria-hidden="true" />
                         Download QR
                       </a>
                     ) : null}
@@ -131,15 +142,15 @@ export default function DonateClient() {
 
                   <div className="flex flex-wrap gap-4 text-xs text-white/60">
                     <span className="inline-flex items-center gap-2">
-                      <FaCheckCircle aria-hidden="true" />
+                      <Icon name="verified" size={16} aria-hidden="true" />
                       UPI ID verified
                     </span>
                     <span className="inline-flex items-center gap-2">
-                      <FaLock aria-hidden="true" />
+                      <Icon name="shield" size={16} aria-hidden="true" />
                       No card details needed
                     </span>
                     <span className="inline-flex items-center gap-2">
-                      <FaMobileAlt aria-hidden="true" />
+                      <Icon name="smartphone" size={16} aria-hidden="true" />
                       Works with any UPI app
                     </span>
                   </div>
@@ -206,7 +217,12 @@ export default function DonateClient() {
                     onClick={() => setOpenIndex(isOpen ? null : index)}
                   >
                     <span className="font-medium">{faq.question}</span>
-                    <span className="text-white/60 text-lg">{isOpen ? '−' : '+'}</span>
+                    <Icon
+                      name="chevronDown"
+                      size={18}
+                      className={`text-white/60 transition ${isOpen ? 'rotate-180' : ''}`}
+                      aria-hidden="true"
+                    />
                   </button>
                   <div
                     id={`faq-panel-${index}`}

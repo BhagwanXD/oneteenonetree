@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Icon from '@/components/Icon'
 
 type GalleryItem = {
   id: string
@@ -48,6 +49,9 @@ export default function GalleryClient({
         {initialItems.length === 0 ? (
           <div className="space-y-6">
             <div className="card text-center space-y-3">
+              <div className="mx-auto h-12 w-12 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-white/70">
+                <Icon name="info" size={20} aria-hidden="true" />
+              </div>
               <h2 className="text-xl font-semibold">No photos yet.</h2>
               <p className="text-white/70">
                 We&apos;ll add drive photos soon. Check back for updates.

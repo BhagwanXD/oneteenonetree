@@ -2,33 +2,33 @@
 
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
-import { FaInstagram, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa'
 import type { TeamMember } from '@/data/team'
+import Icon from '@/components/Icon'
 
 type SocialType = 'instagram' | 'linkedin' | 'twitter' | 'youtube'
 
 const socialConfig: Record<
   SocialType,
-  { label: string; icon: React.ReactNode; buildUrl: (value: string) => string }
+  { label: string; iconName: 'instagram' | 'linkedin' | 'twitter' | 'youtube'; buildUrl: (value: string) => string }
 > = {
   instagram: {
     label: 'Instagram',
-    icon: <FaInstagram className="text-lg" />,
+    iconName: 'instagram',
     buildUrl: (value) => `https://www.instagram.com/${value}`,
   },
   linkedin: {
     label: 'LinkedIn',
-    icon: <FaLinkedin className="text-lg" />,
+    iconName: 'linkedin',
     buildUrl: (value) => `https://www.linkedin.com/${value}`,
   },
   twitter: {
     label: 'X',
-    icon: <FaTwitter className="text-lg" />,
+    iconName: 'twitter',
     buildUrl: (value) => `https://x.com/${value}`,
   },
   youtube: {
     label: 'YouTube',
-    icon: <FaYoutube className="text-lg" />,
+    iconName: 'youtube',
     buildUrl: (value) => `https://www.youtube.com/${value.startsWith('@') ? value : `@${value}`}`,
   },
 }
@@ -106,12 +106,12 @@ export default function MemberHero({ member }: { member: TeamMember }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${socialConfig[type].label} — ${member.name}`}
-                    title={`${socialConfig[type].label} — ${member.name}`}
-                    className="h-12 w-12 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
-                  >
-                    {socialConfig[type].icon}
-                  </a>
-                ))
+                title={`${socialConfig[type].label} — ${member.name}`}
+                className="h-12 w-12 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+              >
+                <Icon name={socialConfig[type].iconName} size={18} aria-hidden="true" />
+              </a>
+            ))
               ) : (
                 <span className="text-xs text-white/50">Social links coming soon.</span>
               )}

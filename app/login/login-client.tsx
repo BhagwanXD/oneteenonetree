@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { FaLeaf, FaLock, FaShieldAlt } from 'react-icons/fa'
+import Icon from '@/components/Icon'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -210,15 +210,15 @@ export default function LoginClient() {
 
       <div className="max-w-xl mx-auto space-y-2 text-xs text-white/60">
         <div className="flex items-center gap-2">
-          <FaLock aria-hidden="true" />
+          <Icon name="lock" size={16} aria-hidden="true" />
           <span>Secure sign-in powered by Google & email verification.</span>
         </div>
         <div className="flex items-center gap-2">
-          <FaShieldAlt aria-hidden="true" />
+          <Icon name="shield" size={16} aria-hidden="true" />
           <span>We never post without permission.</span>
         </div>
         <div className="flex items-center gap-2">
-          <FaLeaf aria-hidden="true" />
+          <Icon name="eco" size={16} aria-hidden="true" />
           <span>We only use your email for OneTeenOneTree activity.</span>
         </div>
       </div>

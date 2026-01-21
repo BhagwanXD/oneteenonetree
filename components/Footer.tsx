@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { FaInstagram, FaLinkedin } from 'react-icons/fa'
+import Icon from '@/components/Icon'
 
 export default function Footer() {
   return (
@@ -109,7 +109,7 @@ export default function Footer() {
                 className="h-11 w-11 rounded-xl border border-white/10 bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
                 aria-label="Instagram"
               >
-                <FaInstagram className="text-lg" />
+                <Icon name="instagram" size={18} aria-hidden="true" />
               </a>
               <a
                 href="https://www.linkedin.com/company/oneteen-onetree"
@@ -118,7 +118,7 @@ export default function Footer() {
                 className="h-11 w-11 rounded-xl border border-white/10 bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
                 aria-label="LinkedIn Company"
               >
-                <FaLinkedin className="text-lg" />
+                <Icon name="linkedin" size={18} aria-hidden="true" />
               </a>
             </div>
           </div>

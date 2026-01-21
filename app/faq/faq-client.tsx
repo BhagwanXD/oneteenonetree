@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { FaLink } from 'react-icons/fa'
-import { faqSections, type FaqAnswerPart, type FaqSection } from './faq-data'
+import { faqSections, type FaqAnswerPart } from './faq-data'
+import Icon from '@/components/Icon'
 
 const normalize = (value: string) => value.toLowerCase()
 
@@ -82,7 +82,12 @@ export default function FaqClient() {
   return (
     <div className="space-y-10">
       <section className="space-y-4">
-        <h1 className="text-4xl md:text-5xl font-extrabold">Frequently Asked Questions</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold">
+          <span className="inline-flex items-center gap-2">
+            <Icon name="help" size={28} aria-hidden="true" />
+            Frequently Asked Questions
+          </span>
+        </h1>
         <p className="text-white/70 text-lg max-w-3xl">
           Answers about OneTeenOneTree, the pledge, planting drives, verification, donations, and
           partnerships.
@@ -91,14 +96,22 @@ export default function FaqClient() {
           <label className="text-sm text-white/70" htmlFor="faq-search">
             Search questions
           </label>
-          <input
-            id="faq-search"
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search for pledges, verification, donations..."
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm focus:border-emerald-300/60 focus:ring-2 focus:ring-emerald-500"
-          />
+          <div className="relative">
+            <Icon
+              name="search"
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+              aria-hidden="true"
+            />
+            <input
+              id="faq-search"
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search for pledges, verification, donations..."
+              className="w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-4 py-2 text-sm focus:border-emerald-300/60 focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
           <div className="text-xs text-white/50">
             {query.trim()
               ? `${totalMatches} question${totalMatches === 1 ? '' : 's'} found`
@@ -141,10 +154,15 @@ export default function FaqClient() {
                         className="text-xs text-white/60 hover:text-white transition flex items-center gap-1"
                         aria-label={`Copy link to ${item.question}`}
                       >
-                        <FaLink aria-hidden="true" />
+                        <Icon name="link" size={14} aria-hidden="true" />
                         {copiedId === item.id ? 'Copied' : 'Copy link'}
                       </button>
-                      <span className="text-white/60 text-lg">{isOpen ? '−' : '+'}</span>
+                      <Icon
+                        name="chevronDown"
+                        size={18}
+                        className={`text-white/60 transition ${isOpen ? 'rotate-180' : ''}`}
+                        aria-hidden="true"
+                      />
                     </div>
                     <div
                       id={panelId}

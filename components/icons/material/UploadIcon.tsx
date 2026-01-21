@@ -1,0 +1,16 @@
+import * as React from 'react'
+
+export default function UploadIcon(props: React.SVGProps<SVGSVGElement>) {
+  const { children, ...rest } = props
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      {...rest}
+    >
+      {children}
+      <path fill="none" d="M0 0h24v24H0V0z"></path><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm3-10.17L14.17 8H13v6h-2V8H9.83L12 5.83zM5 18h14v2H5z"></path>
+    </svg>
+  )
+}

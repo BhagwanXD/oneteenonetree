@@ -9,6 +9,7 @@
     "postbuild": "next-sitemap",
     "gen:geo": "node scripts/generate-geo.js",
     "gen:geo:split": "node scripts/generate-geo.js --split-cities",
+    "icons:fetch": "node scripts/fetch-material-icons.mjs",
     "lint": "eslint ."
   },
   "dependencies": {

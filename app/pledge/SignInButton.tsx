@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
+import Icon from '@/components/Icon';
 
 export default function SignInButton({
   className = '',
@@ -20,7 +21,8 @@ export default function SignInButton({
     <Link href={`/login?next=${encodeURIComponent(nextPath)}`} className={className}>
       {children ?? (
         <>
-          <span className="mr-2">🔐</span> Sign in
+          <Icon name="lock" size={16} className="text-black/80" aria-hidden="true" />
+          <span>Sign in</span>
         </>
       )}
     </Link>

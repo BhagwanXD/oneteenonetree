@@ -10,6 +10,7 @@ import SignInButton from '@/app/pledge/SignInButton';
 import type { User } from '@supabase/supabase-js';
 import { useProfile } from '@/components/ProfileProvider';
 import { accountNavItems, filterAccountItems, publicNavItems } from '@/lib/navigation';
+import Icon from '@/components/Icon';
 
 
 const NavLink = ({
@@ -194,7 +195,15 @@ export default function Header() {
                   : 'text-white/70 hover:text-white hover:bg-white/5'
               }`}
             >
-              More <span className="ml-1">▾</span>
+              <span className="inline-flex items-center gap-1">
+                More
+                <Icon
+                  name="chevronDown"
+                  size={16}
+                  className={`transition ${isMoreOpen ? 'rotate-180' : ''}`}
+                  aria-hidden="true"
+                />
+              </span>
             </button>
             {isMoreOpen && (
               <div
@@ -233,7 +242,7 @@ export default function Header() {
             aria-expanded={isMobileOpen}
             onClick={() => setIsMobileOpen(true)}
           >
-            ☰
+            <Icon name="menu" size={18} aria-hidden="true" />
           </button>
           {authLoading ? (
             <span className="text-white/60 text-sm">…</span>
@@ -248,7 +257,12 @@ export default function Header() {
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
               >
                 {profileLoading ? 'Hi…' : displayName || 'Account'}
-                <span>▾</span>
+                <Icon
+                  name="chevronDown"
+                  size={16}
+                  className={`transition ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                  aria-hidden="true"
+                />
               </button>
               {isUserMenuOpen && (
                 <div
@@ -304,7 +318,7 @@ export default function Header() {
                 className="h-10 w-10 rounded-xl border border-white/10 bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
                 onClick={() => setIsMobileOpen(false)}
               >
-                ✕
+                <Icon name="close" size={18} aria-hidden="true" />
               </button>
             </div>
 

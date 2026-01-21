@@ -1,10 +1,10 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
-import { FaCamera, FaSeedling, FaTrophy } from 'react-icons/fa'
 import PledgeForm from './PledgeForm'
 import PledgeStats from './PledgeStats'
 import SignInButton from './SignInButton'
+import Icon from '@/components/Icon'
 
 export const dynamic = 'force-dynamic'
 export const metadata = {
@@ -101,17 +101,17 @@ export default async function PledgePage() {
               </h2>
               <div className="mt-6 grid gap-4 md:grid-cols-3">
                 <PledgeStep
-                  icon={<FaSeedling aria-hidden="true" />}
+                  icon={<Icon name="eco" size={22} aria-hidden="true" />}
                   title="Commit"
                   description="Pledge to plant at least one tree."
                 />
                 <PledgeStep
-                  icon={<FaCamera aria-hidden="true" />}
+                  icon={<Icon name="camera" size={22} aria-hidden="true" />}
                   title="Verify"
                   description="Upload a photo after planting."
                 />
                 <PledgeStep
-                  icon={<FaTrophy aria-hidden="true" />}
+                  icon={<Icon name="award" size={22} aria-hidden="true" />}
                   title="Inspire"
                   description="Earn badges and climb the leaderboard."
                 />

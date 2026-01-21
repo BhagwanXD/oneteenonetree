@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { FaInstagram, FaLinkedin, FaSyncAlt, FaTrash } from 'react-icons/fa'
 import { parseSocialCsv } from '@/lib/social/csv'
+import Icon from '@/components/Icon'
 
 type SocialPost = {
   id: string
@@ -33,12 +33,12 @@ type BulkSummary = {
 const platformMeta = {
   instagram: {
     label: 'Instagram',
-    icon: <FaInstagram aria-hidden="true" />,
+    icon: <Icon name="instagram" size={16} aria-hidden="true" />,
     badge: 'border-pink-500/40 bg-pink-600/20 text-pink-200',
   },
   linkedin: {
     label: 'LinkedIn',
-    icon: <FaLinkedin aria-hidden="true" />,
+    icon: <Icon name="linkedin" size={16} aria-hidden="true" />,
     badge: 'border-sky-500/40 bg-sky-600/20 text-sky-200',
   },
 }
@@ -253,7 +253,7 @@ export default function SocialAdminClient({
           disabled={busyId === 'sync'}
           className="btn inline-flex items-center gap-2"
         >
-          <FaSyncAlt aria-hidden="true" />
+          <Icon name="sync" size={16} aria-hidden="true" />
           Run sync now
         </button>
       </div>
@@ -470,7 +470,7 @@ export default function SocialAdminClient({
                   disabled={busyId === post.id}
                   className="inline-flex items-center gap-2 text-sm text-red-300 hover:text-red-200"
                 >
-                  <FaTrash aria-hidden="true" />
+                  <Icon name="delete" size={16} aria-hidden="true" />
                   Delete
                 </button>
               </div>
