@@ -1,8 +1,4 @@
 const templateLabels: Record<string, string> = {
-  impact: 'Impact Card',
-  volunteer: 'Volunteer Call',
-  drive: 'Drive Highlight',
-  thankyou: 'Thank You / Appreciation',
   onetree: 'OneTeenOneTree = One Tree',
 }
 

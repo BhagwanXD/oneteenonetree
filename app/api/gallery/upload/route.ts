@@ -5,7 +5,7 @@ import { buildSeoCaption, slugify } from '@/lib/gallery'
 
 export const runtime = 'nodejs'
 
-const templateOptions = new Set(['impact', 'volunteer', 'drive', 'thankyou', 'onetree'])
+const templateOptions = new Set(['onetree'])
 const sizeOptions = new Set(['square', 'portrait', 'story'])
 
 const normalize = (value: FormDataEntryValue | null) =>

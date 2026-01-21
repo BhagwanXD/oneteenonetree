@@ -2,9 +2,9 @@ import CreateClient from './create-client'
 import { buildMetadata } from '@/lib/seo'
 
 export const metadata = buildMetadata({
-  title: 'Create',
+  title: 'Create your OneTeenOneTree poster',
   description:
-    'Create OneTeenOneTree posters and social cards for impact updates, volunteer calls, and drive highlights.',
+    'Generate a OneTeenOneTree pledge poster with your name and photo, ready to share.',
   path: '/create',
 })
 
