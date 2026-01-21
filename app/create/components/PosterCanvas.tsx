@@ -217,17 +217,6 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
 
       const contentStart = padding + logoBox + 42 * scale
       const contentWidth = Math.min(exportWidth * 0.66, exportWidth - padding * 2)
-      const panelX = padding - 12 * scale
-      const panelY = contentStart - 24 * scale
-      const safeBottomY = exportHeight - padding - 220 * scale
-      const panelHeight = Math.max(200 * scale, safeBottomY - panelY)
-      const panelWidth = contentWidth + 56 * scale
-      ctx.fillStyle = 'rgba(6, 15, 10, 0.55)'
-      drawRoundedRect(ctx, panelX, panelY, panelWidth, panelHeight, 24 * scale)
-      ctx.fill()
-      ctx.strokeStyle = 'rgba(255,255,255,0.12)'
-      ctx.lineWidth = 1 * scale
-      ctx.stroke()
       let cursorY = contentStart
 
       ctx.textBaseline = 'top'
