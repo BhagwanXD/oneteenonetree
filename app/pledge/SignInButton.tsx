@@ -1,6 +1,6 @@
 'use client';
+import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function SignInButton({
   className = '',
@@ -16,22 +16,13 @@ export default function SignInButton({
     nextOverride ||
     (search?.toString() ? `${pathname}?${search}` : pathname || '/');
 
-  const handleSignIn = async () => {
-    const supabase = createClientComponentClient();
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo, queryParams: { prompt: 'select_account' } },
-    });
-  };
-
   return (
-    <button onClick={handleSignIn} className={className}>
+    <Link href={`/login?next=${encodeURIComponent(nextPath)}`} className={className}>
       {children ?? (
         <>
-          <span className="mr-2">🔐</span> Sign in with Google
+          <span className="mr-2">🔐</span> Sign in
         </>
       )}
-    </button>
+    </Link>
   );
 }

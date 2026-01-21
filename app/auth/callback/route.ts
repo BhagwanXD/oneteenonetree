@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { ensureProfile } from '@/lib/auth/profile'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,6 +31,13 @@ export async function GET(request: Request) {
       if (exchError) {
         console.error('Supabase exchangeCodeForSession error:', exchError)
         return NextResponse.redirect(new URL(`/?auth_error=${encodeURIComponent(exchError.message)}`, url.origin))
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (user) {
+        await ensureProfile(supabase, user)
       }
     } catch (e: any) {
       console.error('Auth callback exception:', e)
