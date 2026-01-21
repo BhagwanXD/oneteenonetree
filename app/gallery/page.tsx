@@ -48,10 +48,24 @@ export default async function GalleryPage() {
     ...row,
     image_url: resolveImageUrl(supabase, row.image_path),
   }))
+  let showAdminCta = false
+  if (items.length === 0) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      showAdminCta = profile?.role === 'admin'
+    }
+  }
 
   return (
     <div className="min-h-[calc(100vh-8rem)]">
-      <section className="py-16 hero">
+      <section className="py-12 hero">
         <div className="container text-center max-w-2xl mx-auto space-y-4">
           <h1 className="text-4xl md:text-5xl font-extrabold">Gallery</h1>
           <p className="text-white/70 text-lg">
@@ -60,7 +74,18 @@ export default async function GalleryPage() {
           </p>
         </div>
       </section>
-      <GalleryClient initialItems={items} />
+      <GalleryClient initialItems={items} showAdminCta={showAdminCta} />
+      <section className="py-12">
+        <div className="container max-w-3xl mx-auto space-y-3 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold">About the Gallery</h2>
+          <p className="text-white/70 text-base leading-relaxed">
+            OneTeenOneTree&apos;s gallery highlights verified plantation drives, student-led
+            environmental action, and community partnerships across cities. Every photo represents
+            real work in the field, from school drives to local greening initiatives. Follow along
+            as we document progress and impact.
+          </p>
+        </div>
+      </section>
     </div>
   )
 }

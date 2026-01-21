@@ -66,11 +66,11 @@ export default function TeamCard({ member }: { member: TeamMember }) {
   return (
     <div
       ref={ref}
-      className={`card p-0 overflow-hidden flex flex-col group transition-all duration-500 ${
+      className={`card p-0 overflow-hidden flex flex-col h-full group transition-all duration-500 ${
         inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       } ${isFeatured ? 'border-emerald-400/40 shadow-[0_0_20px_rgba(0,208,132,0.14)]' : ''}`}
     >
-      <div className="relative h-56 w-full bg-white/5 border-b border-white/10">
+      <div className="relative w-full aspect-[16/10] bg-white/5 border-b border-white/10">
         {!useFallback ? (
           <Image
             src={member.image}
@@ -88,7 +88,7 @@ export default function TeamCard({ member }: { member: TeamMember }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
       </div>
 
-      <div className="p-5 space-y-3">
+      <div className="p-5 flex flex-col gap-3 flex-1">
         {member.badge ? (
           <span className="inline-flex items-center rounded-full border border-emerald-400/40 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-emerald-200/90">
             {member.badge}
@@ -104,33 +104,35 @@ export default function TeamCard({ member }: { member: TeamMember }) {
           ) : null}
         </div>
 
-        {!member.placeholder ? (
-          <Link
-            href={`/our-team/${member.slug}`}
-            className="inline-flex items-center justify-center rounded-xl border border-white/15 px-3 py-1.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] w-fit"
-          >
-            View more
-          </Link>
-        ) : null}
+        <div className="mt-auto pt-2 flex items-center gap-3">
+          {!member.placeholder ? (
+            <Link
+              href={`/our-team/${member.slug}`}
+              className="inline-flex items-center justify-center rounded-xl border border-white/15 px-3 py-1.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+            >
+              View more
+            </Link>
+          ) : null}
 
-        <div className="flex items-center gap-2">
-          {socials.length ? (
-            socials.map(({ type, url }) => (
-              <a
-                key={`${member.slug}-${type}`}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${socialConfig[type].label} — ${member.name}`}
-                title={`${socialConfig[type].label} — ${member.name}`}
-                className="h-12 w-12 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] hover:shadow-[0_0_12px_rgba(0,208,132,0.18)] hover:scale-[1.05]"
-              >
-                {socialConfig[type].icon}
-              </a>
-            ))
-          ) : (
-            <span className="text-xs text-white/50">Social links coming soon.</span>
-          )}
+          <div className="ml-auto flex items-center gap-2">
+            {socials.length ? (
+              socials.map(({ type, url }) => (
+                <a
+                  key={`${member.slug}-${type}`}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${socialConfig[type].label} — ${member.name}`}
+                  title={`${socialConfig[type].label} — ${member.name}`}
+                  className="h-11 w-11 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] hover:shadow-[0_0_12px_rgba(0,208,132,0.18)] hover:scale-[1.05]"
+                >
+                  {socialConfig[type].icon}
+                </a>
+              ))
+            ) : (
+              <span className="text-xs text-white/50">Social links coming soon.</span>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -34,7 +34,7 @@ export default function OurTeamPage() {
               <TeamCard key={`${member.slug}-${index}`} member={member} />
             ))}
 
-            <div className="card p-5 flex flex-col justify-between gap-4 border-white/15 bg-white/[0.04]">
+            <div className="card p-5 flex flex-col h-full gap-4 border-white/15 bg-white/[0.04]">
               <div className="space-y-3">
                 <div className="h-12 w-12 rounded-2xl bg-emerald-600/20 border border-emerald-400/30 flex items-center justify-center text-emerald-200 text-xl">
                   <FaUsers aria-hidden="true" />
@@ -46,13 +46,25 @@ export default function OurTeamPage() {
                   </p>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Link href="/contact" className="btn justify-center">
+              <ul className="space-y-2 text-sm text-white/70">
+                {[
+                  'Volunteer in local drives',
+                  'Help with outreach & schools',
+                  'Build real impact projects',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--acc)]" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto flex flex-wrap items-center gap-3">
+                <Link href="/contact" className="btn">
                   Get involved
                 </Link>
                 <Link
                   href="/get-involved"
-                  className="text-xs text-white/60 hover:text-white transition inline-flex"
+                  className="text-sm text-white/60 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
                 >
                   Learn more
                 </Link>
