@@ -45,12 +45,12 @@ export default function CreateClient() {
 
   const missingName = !state.name.trim()
   const missingPhoto = !photoUrl
-  const canExport = !(missingName || missingPhoto)
+  const canExport = !(missingName && missingPhoto)
   const effectiveTitle = LOCKED_COPY.title
 
   const handleDownload = () => {
     if (!canExport) {
-      setNotice('Add your name and a photo to export.')
+      setNotice('Add your name or a photo to export.')
       return
     }
     if (!effectiveTitle.trim()) {

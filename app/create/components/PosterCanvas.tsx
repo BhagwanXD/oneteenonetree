@@ -125,26 +125,28 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
     canvas.width = exportWidth * dpr
     canvas.height = exportHeight * dpr
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'high'
 
     const logoSizes = {
-      square: 120,
-      portrait: 130,
-      story: 150,
+      square: 130,
+      portrait: 140,
+      story: 160,
     }
     const brandTextSizes = {
-      square: 40,
-      portrait: 44,
-      story: 48,
+      square: 42,
+      portrait: 46,
+      story: 52,
     }
     const titleSizes = {
-      square: 58,
-      portrait: 64,
-      story: 72,
+      square: 60,
+      portrait: 66,
+      story: 74,
     }
     const subtitleSizes = {
-      square: 28,
-      portrait: 30,
-      story: 32,
+      square: 30,
+      portrait: 32,
+      story: 34,
     }
     const descSizes = {
       square: 22,
@@ -152,9 +154,9 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
       story: 26,
     }
     const nameSizes = {
-      square: 52,
-      portrait: 58,
-      story: 64,
+      square: 60,
+      portrait: 64,
+      story: 72,
     }
 
     const render = async () => {
@@ -213,17 +215,17 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
       const brandTextY = padding + logoBox / 2
       ctx.fillText('OneTeenOneTree', brandTextX, brandTextY)
 
-      const contentStart = padding + logoBox + 46 * scale
+      const contentStart = padding + logoBox + 42 * scale
       const contentWidth = Math.min(exportWidth * 0.66, exportWidth - padding * 2)
       const panelX = padding - 12 * scale
       const panelY = contentStart - 24 * scale
       const safeBottomY = exportHeight - padding - 220 * scale
-      const panelHeight = Math.max(180 * scale, safeBottomY - panelY)
+      const panelHeight = Math.max(200 * scale, safeBottomY - panelY)
       const panelWidth = contentWidth + 56 * scale
-      ctx.fillStyle = 'rgba(4, 12, 8, 0.45)'
+      ctx.fillStyle = 'rgba(6, 15, 10, 0.55)'
       drawRoundedRect(ctx, panelX, panelY, panelWidth, panelHeight, 24 * scale)
       ctx.fill()
-      ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)'
       ctx.lineWidth = 1 * scale
       ctx.stroke()
       let cursorY = contentStart
@@ -258,30 +260,6 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
         cursorY += descLineHeight
       })
 
-      const pledgeName = state.name.trim().slice(0, 60)
-      if (pledgeName) {
-        const nameText = `Pledged by ${pledgeName}`
-        const nameMaxWidth = contentWidth
-        const baseNameSize = nameSizes[state.size] * scale
-        const minNameSize = Math.max(36, baseNameSize - 16)
-        const finalNameSize = fitText(ctx, nameText, nameMaxWidth, baseNameSize, minNameSize)
-
-        const chipPaddingX = 26 * scale
-        const chipPaddingY = 16 * scale
-        ctx.font = `700 ${Math.round(finalNameSize)}px ui-sans-serif, system-ui`
-        const textWidth = ctx.measureText(nameText).width
-        const chipWidth = textWidth + chipPaddingX * 2
-        const chipHeight = finalNameSize + chipPaddingY * 2
-
-        const chipY = exportHeight - padding - 190 * scale
-        ctx.fillStyle = 'rgba(0, 208, 132, 0.9)'
-        drawRoundedRect(ctx, padding, chipY, chipWidth, chipHeight, 999)
-        ctx.fill()
-        ctx.fillStyle = '#0b1510'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(nameText, padding + chipPaddingX, chipY + chipHeight / 2)
-      }
-
       const sdgLabelY = exportHeight - padding - 110 * scale
       ctx.textBaseline = 'top'
       ctx.fillStyle = 'rgba(255,255,255,0.75)'
@@ -305,6 +283,30 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
       )
       ctx.fill()
 
+      const pledgeName = state.name.trim().slice(0, 60)
+      if (pledgeName) {
+        const nameText = `Pledged by ${pledgeName}`
+        const nameMaxWidth = contentWidth
+        const baseNameSize = nameSizes[state.size] * scale
+        const minNameSize = Math.max(36, baseNameSize - 16)
+        const finalNameSize = fitText(ctx, nameText, nameMaxWidth, baseNameSize, minNameSize)
+
+        const chipPaddingX = 26 * scale
+        const chipPaddingY = 16 * scale
+        ctx.font = `700 ${Math.round(finalNameSize)}px ui-sans-serif, system-ui`
+        const textWidth = ctx.measureText(nameText).width
+        const chipWidth = textWidth + chipPaddingX * 2
+        const chipHeight = finalNameSize + chipPaddingY * 2
+
+        const chipY = sdgLabelY - chipHeight - 18 * scale
+        ctx.fillStyle = 'rgba(0, 208, 132, 0.9)'
+        drawRoundedRect(ctx, padding, chipY, chipWidth, chipHeight, 999)
+        ctx.fill()
+        ctx.fillStyle = '#0b1510'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(nameText, padding + chipPaddingX, chipY + chipHeight / 2)
+      }
+
       let iconX = padding + (sdgContainerWidth - totalIconsWidth) / 2
       const iconY = sdgContainerY + (sdgContainerHeight - iconSize) / 2
 
@@ -318,12 +320,36 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
         })
       )
 
-      iconImages.forEach((img) => {
+      iconImages.forEach((img, index) => {
         if (img) {
           ctx.drawImage(img, iconX, iconY, iconSize, iconSize)
+        } else {
+          const label = `SDG ${SDG_ICONS[index]}`
+          ctx.fillStyle = 'rgba(255,255,255,0.12)'
+          drawRoundedRect(ctx, iconX, iconY, iconSize, iconSize, 8 * scale)
+          ctx.fill()
+          ctx.fillStyle = 'rgba(255,255,255,0.85)'
+          ctx.font = `600 ${Math.round(10 * scale)}px ui-sans-serif, system-ui`
+          ctx.textBaseline = 'middle'
+          ctx.textAlign = 'center'
+          ctx.fillText(label, iconX + iconSize / 2, iconY + iconSize / 2)
+          ctx.textAlign = 'left'
         }
         iconX += iconSize + gap
       })
+
+      // Admin note: place the official UN logo at /public/brand/un-logo.png if permitted.
+      const unLogo = new Image()
+      unLogo.src = '/brand/un-logo.png'
+      await unLogo.decode().catch(() => null)
+      if (unLogo.complete && unLogo.naturalWidth > 0) {
+        const unSize = 44 * scale
+        const unX = Math.min(
+          padding + sdgContainerWidth + 16 * scale,
+          exportWidth - padding - unSize
+        )
+        ctx.drawImage(unLogo, unX, sdgLabelY - 6 * scale, unSize, unSize)
+      }
 
       const footerY = exportHeight - padding + 6 * scale
       ctx.strokeStyle = 'rgba(255,255,255,0.4)'

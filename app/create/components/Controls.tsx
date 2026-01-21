@@ -16,7 +16,7 @@ type ControlsProps = {
   canExport: boolean
 }
 
-const optionClass = (active: boolean) =>
+  const optionClass = (active: boolean) =>
   `rounded-2xl border px-3 py-2 text-sm text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] ${
     active
       ? 'border-white/30 bg-white/10 text-white'
@@ -34,6 +34,8 @@ export default function Controls({
   missingPhoto,
   canExport,
 }: ControlsProps) {
+  const showInputError = missingName && missingPhoto
+
   return (
     <div className="card space-y-6">
       <div className="space-y-2">
@@ -42,7 +44,7 @@ export default function Controls({
           Create your poster
         </h2>
         <p className="text-sm text-white/60">
-          Add your name and a photo, then download your poster.
+          Add your name or a photo, then download your poster.
         </p>
       </div>
 
@@ -63,19 +65,18 @@ export default function Controls({
       </div>
 
       <label className="text-sm space-y-2" htmlFor="pledge-name">
-        <span className="text-white/70">Your name (required)</span>
+        <span className="text-white/70">Your name (required if no photo)</span>
         <input
           id="pledge-name"
           name="pledge-name"
-          required
           maxLength={80}
           value={state.name}
           onChange={(event) => onChange({ name: event.target.value })}
           className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm focus:border-emerald-300/60 focus:ring-2 focus:ring-emerald-500"
           placeholder="Your name"
         />
-        {missingName ? (
-          <span className="text-xs text-rose-200">Please enter your name.</span>
+        {showInputError && missingName ? (
+          <span className="text-xs text-rose-200">Please add your name or a photo.</span>
         ) : null}
       </label>
 
@@ -83,13 +84,12 @@ export default function Controls({
         <label className="text-sm space-y-2" htmlFor="story-photo">
           <span className="text-white/70 inline-flex items-center gap-2">
             <Icon name="camera" size={16} aria-hidden="true" />
-            Upload a photo (required)
+            Upload a photo (required if no name)
           </span>
           <input
             id="story-photo"
             type="file"
             accept="image/*"
-            required
             onChange={(event) => {
               const file = event.target.files?.[0] ?? null
               onPhotoChange(file)
@@ -106,8 +106,8 @@ export default function Controls({
             Remove photo
           </button>
         ) : null}
-        {missingPhoto ? (
-          <span className="text-xs text-rose-200">Please upload a photo.</span>
+        {showInputError && missingPhoto ? (
+          <span className="text-xs text-rose-200">Please add your name or a photo.</span>
         ) : null}
       </div>
 
@@ -125,15 +125,15 @@ export default function Controls({
           <Icon name="download" size={18} aria-hidden="true" />
           Download poster
         </button>
-        {notice ? (
-          <p className="text-xs text-white/60" role="status" aria-live="polite">
-            {notice}
-          </p>
-        ) : (
-          <p className="text-xs text-white/50">
-            Both name and photo are required before you can export.
-          </p>
-        )}
+          {notice ? (
+            <p className="text-xs text-white/60" role="status" aria-live="polite">
+              {notice}
+            </p>
+          ) : (
+            <p className="text-xs text-white/50">
+              Add at least a name or a photo to enable export.
+            </p>
+          )}
       </div>
     </div>
   )
