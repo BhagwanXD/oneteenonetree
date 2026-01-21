@@ -12,6 +12,36 @@ import { useProfile } from '@/components/ProfileProvider';
 import { accountNavItems, filterAccountItems, publicNavItems } from '@/lib/navigation';
 import Icon from '@/components/Icon';
 
+const moreMenuGroups = [
+  {
+    label: 'Community',
+    items: [
+      { label: 'Our Team', href: '/our-team', icon: 'groups' },
+      { label: 'Leaderboard', href: '/leaderboard', icon: 'leaderboard' },
+      { label: 'Social', href: '/social', icon: 'share' },
+    ],
+  },
+  {
+    label: 'Impact',
+    items: [
+      { label: 'Gallery', href: '/gallery', icon: 'camera' },
+      { label: 'Blog', href: '/blog', icon: 'article' },
+      { label: 'Press', href: '/press', icon: 'newspaper' },
+    ],
+  },
+  {
+    label: 'Help',
+    items: [
+      { label: 'FAQ', href: '/faq', icon: 'help' },
+      { label: 'Contact', href: '/contact', icon: 'mail' },
+    ],
+  },
+  {
+    label: 'Extras',
+    items: [{ label: 'Games', href: '/games', icon: 'games' }],
+  },
+] as const;
+
 
 const NavLink = ({
   href,
@@ -89,8 +119,8 @@ export default function Header() {
 
   const role = profile?.role ?? null;
   const primaryItems = publicNavItems.filter((item) => item.desktop === 'primary');
-  const moreItems = publicNavItems.filter((item) => item.desktop === 'more');
-  const showMoreActive = moreItems.some((item) => item.href === pathname);
+  const moreMenuItems = moreMenuGroups.flatMap((group) => group.items);
+  const showMoreActive = moreMenuItems.some((item) => item.href === pathname);
   const accountItems = filterAccountItems({ items: accountNavItems, isAuthed: !!user, role });
 
   const handleCloseMenus = () => {
@@ -209,25 +239,40 @@ export default function Header() {
               <div
                 id="more-menu"
                 role="menu"
-                className="absolute right-0 mt-2 w-48 rounded-2xl border border-white/10 bg-[var(--bg)] p-2 shadow-[0_12px_30px_rgba(0,0,0,0.45)]"
+                className="absolute right-0 mt-2 w-64 rounded-2xl border border-white/10 bg-[var(--bg)] p-3 shadow-[0_12px_30px_rgba(0,0,0,0.45)]"
                 onMouseEnter={openMoreMenu}
                 onMouseLeave={scheduleCloseMoreMenu}
               >
-                {moreItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    role="menuitem"
-                    onClick={() => setIsMoreOpen(false)}
-                    className={`block rounded-lg px-3 py-2 text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] ${
-                      pathname === item.href
-                        ? 'bg-white/10 text-white'
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                <div className="space-y-3">
+                  {moreMenuGroups.map((group, index) => (
+                    <div key={group.label}>
+                      <p className="text-[11px] uppercase tracking-wider text-white/50">
+                        {group.label}
+                      </p>
+                      <div className="mt-2 grid gap-1">
+                        {group.items.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            role="menuitem"
+                            onClick={() => setIsMoreOpen(false)}
+                            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] ${
+                              pathname === item.href
+                                ? 'bg-white/10 text-white'
+                                : 'text-white/70 hover:text-white hover:bg-white/5'
+                            }`}
+                          >
+                            <Icon name={item.icon} size={16} className="text-white/60" aria-hidden="true" />
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                      {index < moreMenuGroups.length - 1 ? (
+                        <div className="mt-3 h-px bg-white/10" />
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -256,6 +301,7 @@ export default function Header() {
                 onClick={() => setIsUserMenuOpen((prev) => !prev)}
                 className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
               >
+                <Icon name="user" size={16} className="text-white/70" aria-hidden="true" />
                 {profileLoading ? 'Hi…' : displayName || 'Account'}
                 <Icon
                   name="chevronDown"
