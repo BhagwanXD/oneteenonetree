@@ -11,8 +11,20 @@ import type { User } from '@supabase/supabase-js';
 import { useProfile } from '@/components/ProfileProvider';
 import { accountNavItems, filterAccountItems, publicNavItems } from '@/lib/navigation';
 import Icon from '@/components/Icon';
+import type { IconName } from '@/components/icons';
 
-const moreMenuGroups = [
+type MoreMenuItem = {
+  label: string;
+  href: string;
+  icon: IconName;
+};
+
+type MoreMenuGroup = {
+  label: string;
+  items: MoreMenuItem[];
+};
+
+const moreMenuGroups: MoreMenuGroup[] = [
   {
     label: 'Community',
     items: [
