@@ -25,7 +25,7 @@ export default function SuccessClient({
   }, [])
 
   const origin =
-    typeof window !== 'undefined' ? window.location.origin : 'https://www.oneteenonetree.org/'
+    typeof window !== 'undefined' ? window.location.origin : 'https://oneteenonetree.org/'
   const shareText = `I just pledged a tree with OneTeenOneTree 🌱 Join me: ${origin}`
 
   const copyCaption = async () => {

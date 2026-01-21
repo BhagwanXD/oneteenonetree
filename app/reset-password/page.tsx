@@ -1,13 +1,12 @@
 import ResetPasswordClient from './reset-password-client'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Update password | OneTeenOneTree',
+export const metadata = buildMetadata({
+  title: 'Update password',
   description: 'Set a new password for your OneTeenOneTree account.',
-  alternates: {
-    canonical: 'https://www.oneteenonetree.org/reset-password',
-  },
-  robots: { index: false, follow: false },
-}
+  path: '/reset-password',
+  noIndex: true,
+})
 
 export default function ResetPasswordPage() {
   return (

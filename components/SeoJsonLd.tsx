@@ -1,7 +1,7 @@
 import Script from 'next/script'
+import { siteUrl } from '@/lib/seo'
 
 export default function SeoJsonLd() {
-  const siteUrl = 'https://www.oneteenonetree.org'
   const data = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -49,7 +49,11 @@ export default function SeoJsonLd() {
           { '@type': 'SiteNavigationElement', name: 'Leaderboard', url: `${siteUrl}/leaderboard` },
           { '@type': 'SiteNavigationElement', name: 'Blog', url: `${siteUrl}/blog` },
           { '@type': 'SiteNavigationElement', name: 'Social', url: `${siteUrl}/social` },
+          { '@type': 'SiteNavigationElement', name: 'Gallery', url: `${siteUrl}/gallery` },
+          { '@type': 'SiteNavigationElement', name: 'Press', url: `${siteUrl}/press` },
+          { '@type': 'SiteNavigationElement', name: 'FAQ', url: `${siteUrl}/faq` },
           { '@type': 'SiteNavigationElement', name: 'Contact', url: `${siteUrl}/contact` },
+          { '@type': 'SiteNavigationElement', name: 'Get Involved', url: `${siteUrl}/get-involved` },
           { '@type': 'SiteNavigationElement', name: 'Games', url: `${siteUrl}/games` },
         ],
       },

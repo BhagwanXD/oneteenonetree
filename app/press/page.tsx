@@ -1,26 +1,12 @@
 import { pressItems } from '@/data/press'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Press | OneTeenOneTree',
+export const metadata = buildMetadata({
+  title: 'Press',
   description:
     'News, announcements, and media resources for the OneTeenOneTree youth-led climate movement.',
-  alternates: {
-    canonical: 'https://www.oneteenonetree.org/press',
-  },
-  openGraph: {
-    title: 'Press | OneTeenOneTree',
-    description:
-      'News, announcements, and media resources for the OneTeenOneTree youth-led climate movement.',
-    url: 'https://www.oneteenonetree.org/press',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
-  },
-  twitter: {
-    title: 'Press | OneTeenOneTree',
-    description:
-      'News, announcements, and media resources for the OneTeenOneTree youth-led climate movement.',
-    images: ['/og-image.jpg'],
-  },
-}
+  path: '/press',
+})
 
 const mediaKitItems = [
   {

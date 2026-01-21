@@ -1,28 +1,13 @@
-import SocialClient from "./SocialClient";
+import SocialClient from './SocialClient'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: "Social | OneTeenOneTree",
-  description:
-    "Explore the latest OneTeenOneTree updates across Instagram and LinkedIn.",
-  alternates: {
-    canonical: "https://www.oneteenonetree.org/social",
-  },
-  openGraph: {
-    title: "Social | OneTeenOneTree",
-    description:
-      "Explore the latest OneTeenOneTree updates across Instagram and LinkedIn.",
-    url: "https://www.oneteenonetree.org/social",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
-  },
-  twitter: {
-    title: "Social | OneTeenOneTree",
-    description:
-      "Explore the latest OneTeenOneTree updates across Instagram and LinkedIn.",
-    images: ["/og-image.jpg"],
-  },
-};
+export const metadata = buildMetadata({
+  title: 'Social',
+  description: 'Explore the latest OneTeenOneTree updates across Instagram and LinkedIn.',
+  path: '/social',
+})
 
 export default async function SocialPage() {
   const cookieStore = await cookies()

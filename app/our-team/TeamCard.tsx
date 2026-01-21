@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { FaInstagram, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa'
 import { useInView } from 'react-intersection-observer'
@@ -102,6 +103,15 @@ export default function TeamCard({ member }: { member: TeamMember }) {
             <p className="text-sm text-white/70 mt-2">{member.tagline}</p>
           ) : null}
         </div>
+
+        {!member.placeholder ? (
+          <Link
+            href={`/our-team/${member.slug}`}
+            className="inline-flex items-center justify-center rounded-xl border border-white/15 px-3 py-1.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/5 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] w-fit"
+          >
+            View more
+          </Link>
+        ) : null}
 
         <div className="flex items-center gap-2">
           {socials.length ? (

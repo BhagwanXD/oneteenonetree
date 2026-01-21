@@ -1,26 +1,12 @@
 import ContactForm from './contact-form'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Contact | OneTeenOneTree',
+export const metadata = buildMetadata({
+  title: 'Contact',
   description:
     'Reach out to OneTeenOneTree with questions, partnerships, or volunteering ideas.',
-  alternates: {
-    canonical: 'https://www.oneteenonetree.org/contact',
-  },
-  openGraph: {
-    title: 'Contact | OneTeenOneTree',
-    description:
-      'Reach out to OneTeenOneTree with questions, partnerships, or volunteering ideas.',
-    url: 'https://www.oneteenonetree.org/contact',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
-  },
-  twitter: {
-    title: 'Contact | OneTeenOneTree',
-    description:
-      'Reach out to OneTeenOneTree with questions, partnerships, or volunteering ideas.',
-    images: ['/og-image.jpg'],
-  },
-}
+  path: '/contact',
+})
 
 export default function ContactPage() {
   return (

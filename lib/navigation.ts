@@ -39,8 +39,10 @@ export const publicNavItems: NavItem[] = [
   { label: 'Plant', href: '/plant', section: 'community', desktop: 'primary', visibility: 'public' },
   { label: 'Donate', href: '/donate', section: 'community', desktop: 'primary', visibility: 'public' },
   { label: 'Social', href: '/social', section: 'community', desktop: 'more', visibility: 'public' },
+  { label: 'Gallery', href: '/gallery', section: 'community', desktop: 'more', visibility: 'public' },
   { label: 'Blog', href: '/blog', section: 'resources', desktop: 'more', visibility: 'public' },
   { label: 'Press', href: '/press', section: 'resources', desktop: 'more', visibility: 'public' },
+  { label: 'FAQ', href: '/faq', section: 'resources', desktop: 'more', visibility: 'public' },
   { label: 'Contact', href: '/contact', section: 'resources', desktop: 'more', visibility: 'public' },
   { label: 'Games', href: '/games', section: 'resources', desktop: 'more', visibility: 'public' },
 ]

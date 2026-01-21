@@ -1,14 +1,13 @@
 import { Suspense } from 'react'
 import PasswordLoginClient from './password-client'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Password sign in | OneTeenOneTree',
+export const metadata = buildMetadata({
+  title: 'Password sign in',
   description: 'Sign in to OneTeenOneTree using email and password.',
-  alternates: {
-    canonical: 'https://www.oneteenonetree.org/login/password',
-  },
-  robots: { index: false, follow: false },
-}
+  path: '/login/password',
+  noIndex: true,
+})
 
 export default function PasswordLoginPage() {
   return (

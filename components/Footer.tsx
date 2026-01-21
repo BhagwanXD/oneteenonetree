@@ -20,7 +20,7 @@ export default function Footer() {
             </Link>
             <p className="text-sm text-white/70">A youth-led green pledge.</p>
             <a
-              href="https://www.oneteenonetree.org/"
+              href="https://oneteenonetree.org/"
               className="text-sm text-white/60 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
             >
               oneteenonetree.org
@@ -73,10 +73,22 @@ export default function Footer() {
                 Leaderboard
               </Link>
               <Link
+                href="/gallery"
+                className="text-white/70 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+              >
+                Gallery
+              </Link>
+              <Link
                 href="/press"
                 className="text-white/70 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
               >
                 Press
+              </Link>
+              <Link
+                href="/faq"
+                className="text-white/70 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+              >
+                FAQ
               </Link>
               <Link
                 href="/contact"

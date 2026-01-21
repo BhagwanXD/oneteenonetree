@@ -1,14 +1,13 @@
 import { Suspense } from 'react'
 import LoginClient from './login-client'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Sign in | OneTeenOneTree',
-  description: 'Sign in to OneTeenOneTree with Google, email magic link, or password.',
-  alternates: {
-    canonical: 'https://www.oneteenonetree.org/login',
-  },
-  robots: { index: false, follow: false },
-}
+export const metadata = buildMetadata({
+  title: 'Sign in',
+  description: 'Sign in to OneTeenOneTree with Google or email.',
+  path: '/login',
+  noIndex: true,
+})
 
 export default function LoginPage() {
   return (

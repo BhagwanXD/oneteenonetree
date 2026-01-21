@@ -1,32 +1,17 @@
 import TeamCard from './TeamCard'
 import { FaHandshake, FaLeaf, FaMapMarkerAlt, FaStar, FaUsers } from 'react-icons/fa'
-import { teamMembers } from '@/data/team'
+import { visibleTeamMembers } from '@/data/team'
+import Link from 'next/link'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Our Team | OneTeenOneTree',
+export const metadata = buildMetadata({
+  title: 'Our Team',
   description:
     'Meet the youth-led team behind OneTeenOneTree and the community builders driving local climate action.',
-  alternates: {
-    canonical: 'https://www.oneteenonetree.org/our-team',
-  },
-  openGraph: {
-    title: 'Our Team | OneTeenOneTree',
-    description:
-      'Meet the youth-led team behind OneTeenOneTree and the community builders driving local climate action.',
-    url: 'https://www.oneteenonetree.org/our-team',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
-  },
-  twitter: {
-    title: 'Our Team | OneTeenOneTree',
-    description:
-      'Meet the youth-led team behind OneTeenOneTree and the community builders driving local climate action.',
-    images: ['/og-image.jpg'],
-  },
-}
+  path: '/our-team',
+})
 
 export default function OurTeamPage() {
-  const visibleMembers = teamMembers.filter((member) => !member.placeholder)
-
   return (
     <div className="min-h-[calc(100vh-8rem)]">
       <section className="py-12">
@@ -45,7 +30,7 @@ export default function OurTeamPage() {
       <section className="py-12">
         <div className="container">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {visibleMembers.map((member, index) => (
+            {visibleTeamMembers.map((member, index) => (
               <TeamCard key={`${member.slug}-${index}`} member={member} />
             ))}
 
@@ -61,9 +46,17 @@ export default function OurTeamPage() {
                   </p>
                 </div>
               </div>
-              <a href="mailto:support@oneteenonetree.org" className="btn justify-center">
-                Get involved
-              </a>
+              <div className="space-y-2">
+                <Link href="/contact" className="btn justify-center">
+                  Get involved
+                </Link>
+                <Link
+                  href="/get-involved"
+                  className="text-xs text-white/60 hover:text-white transition inline-flex"
+                >
+                  Learn more
+                </Link>
+              </div>
             </div>
 
             <div className="card p-5 flex flex-col justify-between gap-4 border-white/15 bg-white/[0.04]">
@@ -115,6 +108,10 @@ export default function OurTeamPage() {
           </div>
           <p className="text-center text-sm text-white/50 mt-10">
             This team is actively growing as OneTeenOneTree expands across cities.
+          </p>
+          <p className="text-center text-sm text-white/60 mt-4 max-w-2xl mx-auto">
+            Meet the student-led team behind OneTeenOneTree and learn how we organize verified
+            tree plantation drives with schools, volunteers, and local partners.
           </p>
         </div>
       </section>

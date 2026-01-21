@@ -5,16 +5,16 @@ import SupabaseProvider from '@/components/SupabaseProvider'
 import ProfileProvider from '@/components/ProfileProvider'
 import SeoJsonLd from '@/components/SeoJsonLd'
 import type { Metadata, Viewport } from 'next'
+import { defaultDescription, defaultOgImage, siteUrl } from '@/lib/seo'
 
 // --- ADVANCED SEO METADATA ---
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.oneteenonetree.org/'),
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'OneTeenOneTree - A Youth-led Green Pledge',
     template: '%s | OneTeenOneTree',
   },
-  description:
-    'OneTeenOneTree empowers students worldwide to take climate action by pledging to plant and care for trees - inspiring a generation of eco-conscious youth.',
+  description: defaultDescription,
   applicationName: 'OneTeenOneTree',
   category: 'Environment',
   authors: [{ name: 'Utkarsh Singh', url: 'https://www.linkedin.com/in/utkarshsngh/' }],
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     images: [
       {
-        url: '/og-image.jpg',
+        url: defaultOgImage,
         width: 1200,
         height: 630,
         alt: 'OneTeenOneTree - Youth-led Green Pledge',
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: 'OneTeenOneTree - A Youth-led Green Pledge',
     description:
       'Take the pledge, plant a tree, and inspire others - youth-driven climate action.',
-    images: ['/og-image.jpg'],
+    images: [defaultOgImage],
   },
   robots: {
     index: true,

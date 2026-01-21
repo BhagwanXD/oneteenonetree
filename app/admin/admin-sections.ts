@@ -24,4 +24,10 @@ export const adminSections: AdminSection[] = [
     href: '/admin/contact',
     description: 'Review and respond to contact form messages.',
   },
+  {
+    title: 'Gallery manager',
+    navLabel: 'Gallery',
+    href: '/admin/gallery',
+    description: 'Upload and organize public gallery photos.',
+  },
 ]

@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
+import { FaCheckCircle, FaLock, FaMobileAlt } from 'react-icons/fa'
 
 const breakdown = [
   { label: 'Saplings & materials', value: '40%' },
@@ -39,13 +40,15 @@ const faqs = [
   },
   {
     question: 'What payment methods do you accept?',
-    answer: 'UPI and bank transfers are supported. More options will be added over time.',
+    answer: 'We currently accept UPI payments. More options will be added over time.',
   },
 ]
 
 export default function DonateClient() {
+  const upiId = 'utkarshh@fam'
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
   const [openIndex, setOpenIndex] = useState<number | null>(0)
+  const [qrError, setQrError] = useState(false)
 
   const handleCopy = async (key: string, value: string) => {
     try {
@@ -77,114 +80,88 @@ export default function DonateClient() {
       <section id="payment-details" className="py-16">
         <div className="container">
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold">Payment Details</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">Donate via UPI</h2>
             <p className="text-white/70 mt-2">
-              Choose UPI or bank transfer. Copy details with one click.
+              Scan the QR or copy the UPI ID.
             </p>
           </div>
 
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            <div className="card space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-white/60">UPI</p>
-                  <p className="text-lg font-semibold text-white">oneteenonetree@upi</p>
-                </div>
-                <div className="text-right">
-                  <button
-                    type="button"
-                    onClick={() => handleCopy('upi', 'oneteenonetree@upi')}
-                    className="btn px-3 py-2 text-sm min-h-[44px]"
-                  >
-                    Copy UPI ID
-                  </button>
-                  <p
-                    className="text-xs text-[var(--acc)] mt-1"
-                    role="status"
-                    aria-live="polite"
-                  >
+          <div className="mt-8">
+            <div className="card">
+              <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] items-center">
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <p className="text-xs uppercase tracking-wider text-white/60">UPI Payment</p>
+                    <h3 className="text-2xl font-semibold text-white">Donate via UPI</h3>
+                    <p className="text-sm text-white/60">Scan the QR or copy the UPI ID.</p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
+                    <p className="text-xs uppercase tracking-wider text-white/60">UPI ID</p>
+                    <p className="text-xl font-semibold text-white tracking-wide">{upiId}</p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy('upi', upiId)}
+                      className="btn px-4 py-2 text-sm min-h-[44px]"
+                      aria-label="Copy UPI ID"
+                    >
+                      Copy UPI ID
+                    </button>
+                    {!qrError ? (
+                      <a
+                        href="/images/donate/upi-qr.png"
+                        download
+                        className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 hover:text-white hover:bg-white/10 transition"
+                      >
+                        Download QR
+                      </a>
+                    ) : null}
+                  </div>
+
+                  <p className="text-xs text-[var(--acc)]" role="status" aria-live="polite">
                     {copiedKey === 'upi' ? 'Copied!' : ''}
                   </p>
+
+                  <p className="text-sm text-white/60">
+                    Tip: Add your name in the payment note so we can match your donation.
+                  </p>
+
+                  <div className="flex flex-wrap gap-4 text-xs text-white/60">
+                    <span className="inline-flex items-center gap-2">
+                      <FaCheckCircle aria-hidden="true" />
+                      UPI ID verified
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <FaLock aria-hidden="true" />
+                      No card details needed
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <FaMobileAlt aria-hidden="true" />
+                      Works with any UPI app
+                    </span>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex items-center justify-center">
+                  {!qrError ? (
+                    <Image
+                      src="/images/donate/upi-qr.png"
+                      alt="OneTeenOneTree UPI QR code"
+                      width={260}
+                      height={260}
+                      className="w-full max-w-[260px] h-auto rounded-lg"
+                      onError={() => setQrError(true)}
+                    />
+                  ) : (
+                    <div className="text-sm text-white/60 text-center">
+                      QR unavailable. Use the UPI ID above.
+                    </div>
+                  )}
                 </div>
               </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 flex items-center justify-center">
-                <Image
-                  src="/images/donate/upi-qr.png"
-                  alt="OneTeenOneTree UPI QR code"
-                  width={220}
-                  height={220}
-                  className="rounded-lg"
-                />
-              </div>
-              <p className="text-sm text-white/60">
-                Scan the QR or use the UPI ID above for quick payments.
-              </p>
-            </div>
-
-            <div className="card space-y-4">
-              <div>
-                <p className="text-xs uppercase tracking-wider text-white/60">Bank Transfer</p>
-                <p className="text-lg font-semibold text-white">OneTeenOneTree</p>
-              </div>
-
-              <div className="space-y-3 text-sm">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-white/60">Bank Name</p>
-                    <p className="text-white">Bank Name</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-white/60">Account No.</p>
-                    <p className="text-white font-medium tracking-wide">XXXXXXXXXXXX</p>
-                  </div>
-                  <div className="text-right">
-                    <button
-                      type="button"
-                      onClick={() => handleCopy('account', 'XXXXXXXXXXXX')}
-                      className="btn px-3 py-2 text-sm min-h-[44px]"
-                    >
-                      Copy
-                    </button>
-                    <p className="text-xs text-[var(--acc)] mt-1" role="status" aria-live="polite">
-                      {copiedKey === 'account' ? 'Copied!' : ''}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-white/60">IFSC</p>
-                    <p className="text-white font-medium tracking-wide">XXXX0000000</p>
-                  </div>
-                  <div className="text-right">
-                    <button
-                      type="button"
-                      onClick={() => handleCopy('ifsc', 'XXXX0000000')}
-                      className="btn px-3 py-2 text-sm min-h-[44px]"
-                    >
-                      Copy
-                    </button>
-                    <p className="text-xs text-[var(--acc)] mt-1" role="status" aria-live="polite">
-                      {copiedKey === 'ifsc' ? 'Copied!' : ''}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-white/60">Branch</p>
-                    <p className="text-white">Branch Name</p>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-sm text-white/60">
-                Include your name in the transfer note to help us match donations.
-              </p>
             </div>
           </div>
         </div>

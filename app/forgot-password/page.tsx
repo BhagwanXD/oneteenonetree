@@ -1,13 +1,12 @@
 import ForgotPasswordClient from './forgot-password-client'
+import { buildMetadata } from '@/lib/seo'
 
-export const metadata = {
-  title: 'Reset password | OneTeenOneTree',
+export const metadata = buildMetadata({
+  title: 'Reset password',
   description: 'Reset your OneTeenOneTree password.',
-  alternates: {
-    canonical: 'https://www.oneteenonetree.org/forgot-password',
-  },
-  robots: { index: false, follow: false },
-}
+  path: '/forgot-password',
+  noIndex: true,
+})
 
 export default function ForgotPasswordPage() {
   return (
