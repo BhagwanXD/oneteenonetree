@@ -1,9 +1,7 @@
 import './globals.css'
-import Header from '@/components/Header'
+import JsonLd from '@/components/seo/JsonLd'
+import ClientProviders from '@/components/ClientProviders'
 import Footer from '@/components/Footer'
-import SupabaseProvider from '@/components/SupabaseProvider'
-import ProfileProvider from '@/components/ProfileProvider'
-import SeoJsonLd from '@/components/SeoJsonLd'
 import type { Metadata, Viewport } from 'next'
 import { defaultDescription, defaultOgImage, siteUrl } from '@/lib/seo'
 
@@ -11,7 +9,7 @@ import { defaultDescription, defaultOgImage, siteUrl } from '@/lib/seo'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'OneTeenOneTree - A Youth-led Green Pledge',
+    default: 'OneTeenOneTree — Youth-led Climate Action Movement',
     template: '%s | OneTeenOneTree',
   },
   description: defaultDescription,
@@ -37,9 +35,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: '/',
-    title: 'OneTeenOneTree - A Youth-led Green Pledge',
-    description:
-      'Join thousands of students making real environmental impact. Take the pledge, plant a tree, and inspire others.',
+    title: 'OneTeenOneTree — Youth-led Climate Action Movement',
+    description: defaultDescription,
     siteName: 'OneTeenOneTree',
     locale: 'en_US',
     images: [
@@ -47,7 +44,7 @@ export const metadata: Metadata = {
         url: defaultOgImage,
         width: 1200,
         height: 630,
-        alt: 'OneTeenOneTree - Youth-led Green Pledge',
+        alt: 'OneTeenOneTree — Youth-led Climate Action Movement',
       },
     ],
   },
@@ -55,9 +52,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@oneteen.onetree',
     creator: '@oneteen.onetree',
-    title: 'OneTeenOneTree - A Youth-led Green Pledge',
-    description:
-      'Take the pledge, plant a tree, and inspire others - youth-driven climate action.',
+    title: 'OneTeenOneTree — Youth-led Climate Action Movement',
+    description: defaultDescription,
     images: [defaultOgImage],
   },
   robots: {
@@ -85,21 +81,54 @@ export const viewport: Viewport = {
   themeColor: '#0b1510',
 }
 
+const globalJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: 'OneTeenOneTree',
+      url: siteUrl,
+      logo: `${siteUrl}/logo.png`,
+      description:
+        'OneTeenOneTree is a youth-led environmental initiative and climate action movement turning pledges into real trees through verified community drives in India.',
+      foundingDate: '2025',
+      founder: {
+        '@type': 'Person',
+        name: 'Utkarsh Singh',
+      },
+      areaServed: 'IN',
+      sameAs: [
+        'https://www.instagram.com/oneteen.onetree/',
+        'https://www.linkedin.com/company/oneteen-onetree/',
+        'https://www.youtube.com/@oneteenonetree',
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: siteUrl,
+      name: 'OneTeenOneTree',
+      description:
+        'OneTeenOneTree is a youth-led environmental initiative and climate action movement turning pledges into real trees through verified community drives in India.',
+      inLanguage: 'en-IN',
+      publisher: { '@id': `${siteUrl}/#organization` },
+    },
+  ],
+}
+
 // --- LAYOUT COMPONENT ---
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="bg-[#0E1512] text-white">
-        <SupabaseProvider>
-          <ProfileProvider>
-            <Header />
-            <main className="container">{children}</main>
-            <Footer />
-          </ProfileProvider>
-        </SupabaseProvider>
+        <ClientProviders>
+          {children}
+        </ClientProviders>
+        <Footer />
 
         {/* JSON-LD Structured Data for SEO */}
-        <SeoJsonLd />
+        <JsonLd data={globalJsonLd} id="global-jsonld" />
       </body>
     </html>
   )

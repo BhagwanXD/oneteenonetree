@@ -75,7 +75,7 @@ export default async function PledgeStats() {
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.04)]">
+    <div className="card p-5">
       <div className="text-white/60 text-sm">{label}</div>
       <div className="text-2xl font-semibold text-white mt-1">{value.toLocaleString()}</div>
     </div>

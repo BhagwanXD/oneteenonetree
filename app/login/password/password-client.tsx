@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { ensureProfile } from '@/lib/auth/profile'
+import useNavigateWithLoader from '@/components/site/useNavigateWithLoader'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -17,7 +18,7 @@ const getNextPath = (nextValue: string | null) => {
 }
 
 export default function PasswordLoginClient() {
-  const router = useRouter()
+  const { replace } = useNavigateWithLoader()
   const searchParams = useSearchParams()
   const supabase = useMemo(() => createClientComponentClient(), [])
   const [email, setEmail] = useState('')
@@ -35,13 +36,13 @@ export default function PasswordLoginClient() {
     supabase.auth.getUser().then(({ data }) => {
       if (!mounted) return
       if (data.user) {
-        router.replace(nextPath)
+        replace(nextPath)
       }
     })
     return () => {
       mounted = false
     }
-  }, [nextPath, router, supabase])
+  }, [nextPath, replace, supabase])
 
   const handleSignIn = async () => {
     setError('')
@@ -68,7 +69,7 @@ export default function PasswordLoginClient() {
     if (data.user) {
       await ensureProfile(supabase, data.user)
     }
-    router.replace(nextPath)
+    replace(nextPath)
   }
 
   const handleSignUp = async () => {
@@ -97,7 +98,7 @@ export default function PasswordLoginClient() {
 
     if (data.user && data.session) {
       await ensureProfile(supabase, data.user)
-      router.replace(nextPath)
+      replace(nextPath)
       return
     }
 

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
 
 type GalleryItem = {
   id: string
@@ -31,10 +32,8 @@ const formatMeta = (item: GalleryItem) => {
 
 export default function GalleryClient({
   initialItems,
-  showAdminCta,
 }: {
   initialItems: GalleryItem[]
-  showAdminCta?: boolean
 }) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
@@ -44,11 +43,11 @@ export default function GalleryClient({
   )
 
   return (
-    <section className="py-10">
-      <div className="container space-y-6">
+    <Reveal>
+      <section className="space-y-6">
         {initialItems.length === 0 ? (
           <div className="space-y-6">
-            <div className="card text-center space-y-3">
+            <div className="card text-center space-y-3 max-w-xl mx-auto">
               <div className="mx-auto h-12 w-12 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-white/70">
                 <Icon name="info" size={20} aria-hidden="true" />
               </div>
@@ -56,11 +55,6 @@ export default function GalleryClient({
               <p className="text-white/70">
                 We&apos;ll add drive photos soon. Check back for updates.
               </p>
-              {showAdminCta ? (
-                <a href="/admin/gallery" className="btn justify-center">
-                  Upload photos
-                </a>
-              ) : null}
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {Array.from({ length: 8 }).map((_, index) => (
@@ -129,7 +123,7 @@ export default function GalleryClient({
             ) : null}
           </>
         )}
-      </div>
-    </section>
+      </section>
+    </Reveal>
   )
 }

@@ -38,10 +38,10 @@ export const faqSections: FaqSection[] = [
       item(
         'What is OneTeenOneTree?',
         [
-          'OneTeenOneTree is a student-led platform that turns climate intent into action through a simple pledge and real-world tree plantation drives. ',
-          'Our community helps students plant, care for, and verify trees while sharing impact stories.',
+          'OneTeenOneTree is a youth-led environmental initiative and climate action movement based in India. ',
+          'We turn pledges into real trees through verified community drives, student leadership, and impact storytelling.',
         ],
-        'OneTeenOneTree is a student-led platform that turns climate intent into action through a simple pledge and real-world tree plantation drives. Our community helps students plant, care for, and verify trees while sharing impact stories.'
+        'OneTeenOneTree is a youth-led environmental initiative and climate action movement based in India. We turn pledges into real trees through verified community drives, student leadership, and impact storytelling.'
       ),
       item(
         'Is OneTeenOneTree an NGO?',
@@ -54,14 +54,22 @@ export const faqSections: FaqSection[] = [
         'We are a youth-led initiative working with schools, volunteers, and partners to scale verified trees. If you need legal or registration details for your region, please contact the team.'
       ),
       item(
+        'Who founded OneTeenOneTree?',
+        [
+          'OneTeenOneTree was founded by ',
+          link('Utkarsh Singh', '/about'),
+          ' with co-founder Jahnasi Samal. ',
+          'Read our origin story on the about page.',
+        ],
+        'OneTeenOneTree was founded by Utkarsh Singh with co-founder Jahnasi Samal. Read our origin story on the about page.'
+      ),
+      item(
         'Where does OneTeenOneTree operate?',
         [
-          'We welcome pledges from students worldwide and coordinate planting drives locally through schools and community groups. ',
-          'If you want to start a drive in your city, reach out via ',
-          link('the contact page', '/contact'),
-          '.',
+          'We are based in India and focus on verified planting drives across Indian schools and communities. ',
+          'We also welcome pledges from students worldwide.',
         ],
-        'We welcome pledges from students worldwide and coordinate planting drives locally through schools and community groups. If you want to start a drive in your city, reach out via the contact page.'
+        'We are based in India and focus on verified planting drives across Indian schools and communities. We also welcome pledges from students worldwide.'
       ),
       item(
         'How can I learn more about the team?',
@@ -133,6 +141,14 @@ export const faqSections: FaqSection[] = [
     title: 'Planting & Verification',
     items: [
       item(
+        'How do you verify plantations?',
+        [
+          'Verification is based on clear photo or video proof, basic planting details, and ongoing care. ',
+          'Our team reviews submissions to keep the impact record honest and transparent.',
+        ],
+        'Verification is based on clear photo or video proof, basic planting details, and ongoing care. Our team reviews submissions to keep the impact record honest and transparent.'
+      ),
+      item(
         'How do I submit planting proof?',
         [
           'After planting, upload photos and a short video from ',
@@ -171,6 +187,16 @@ export const faqSections: FaqSection[] = [
   {
     title: 'Donations & Support',
     items: [
+      item(
+        'How do donations work?',
+        [
+          'Donations fund saplings, planting materials, local drive logistics, and volunteer-led operations. ',
+          'You can contribute through ',
+          link('the donate page', '/donate'),
+          '.',
+        ],
+        'Donations fund saplings, planting materials, local drive logistics, and volunteer-led operations. You can contribute through the donate page.'
+      ),
       item(
         'How can I donate to OneTeenOneTree?',
         [
@@ -213,7 +239,7 @@ export const faqSections: FaqSection[] = [
     title: 'Schools, Volunteers, Partnerships',
     items: [
       item(
-        'How can schools participate in OneTeenOneTree?',
+        'How can schools partner?',
         [
           'Schools can organize student-led pledges, host planting days, and coordinate verified submissions. ',
           'Reach out through ',

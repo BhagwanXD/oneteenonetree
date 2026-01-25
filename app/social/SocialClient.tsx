@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Icon from "@/components/Icon";
+import Reveal from "@/components/Reveal";
 
 type SocialPost = {
   id: string;
@@ -134,41 +135,32 @@ export default function SocialClient({
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)]">
-      <section className="py-12">
-        <div className="container text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-            Social
-          </h1>
-          <p className="text-white/70 mt-3 max-w-2xl mx-auto">
-            Highlights from OneTeenOneTree across Instagram and LinkedIn.
-          </p>
+    <div className="space-y-10">
+      <Reveal>
+        <section className="flex flex-wrap justify-center gap-3">
+          {filters.map((filter) => {
+            const selected = filter.key === activeFilter;
+            return (
+              <button
+                key={filter.key}
+                type="button"
+                onClick={() => setActiveFilter(filter.key)}
+                aria-pressed={selected}
+                className={`w-20 sm:w-24 aspect-square rounded-2xl border text-xs sm:text-sm font-semibold tracking-tight grid place-items-center text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] ${
+                  selected
+                    ? "border-emerald-400/60 bg-emerald-600/20 text-emerald-200 shadow-[0_0_12px_rgba(0,208,132,0.2)]"
+                    : "border-white/15 bg-white/[0.03] text-white/70 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                {filter.label}
+              </button>
+            );
+          })}
+        </section>
+      </Reveal>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            {filters.map((filter) => {
-              const selected = filter.key === activeFilter;
-              return (
-                <button
-                  key={filter.key}
-                  type="button"
-                  onClick={() => setActiveFilter(filter.key)}
-                  aria-pressed={selected}
-                  className={`w-20 sm:w-24 aspect-square rounded-2xl border text-xs sm:text-sm font-semibold tracking-tight grid place-items-center text-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] ${
-                    selected
-                      ? "border-emerald-400/60 bg-emerald-600/20 text-emerald-200 shadow-[0_0_12px_rgba(0,208,132,0.2)]"
-                      : "border-white/15 bg-white/[0.03] text-white/70 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="container">
+      <Reveal>
+        <section>
           {currentPosts.length === 0 && !loading ? (
             <div className="card text-center max-w-xl mx-auto space-y-4">
               <h2 className="text-2xl font-semibold">No posts yet.</h2>
@@ -198,40 +190,40 @@ export default function SocialClient({
                         ) : null}
                       </div>
 
-                      {showImage ? (
-                        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                          <img
-                            src={post.image_url ?? ""}
-                            alt=""
-                            className="h-40 w-full object-cover"
-                            referrerPolicy="no-referrer"
-                            onError={() =>
-                              setFailedImages((prev) => ({ ...prev, [post.id]: true }))
-                            }
-                          />
-                        </div>
-                      ) : (
-                        <div
-                          className={`h-40 rounded-2xl border border-white/10 bg-gradient-to-br ${platform.fallback} flex flex-col items-center justify-center text-center gap-2 px-4`}
-                        >
-                          <div className="text-white/80">{platform.iconLarge}</div>
-                          <div className="text-sm font-semibold text-white">
-                            Preview not available
+                        {showImage ? (
+                          <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                            <img
+                              src={post.image_url ?? ""}
+                              alt=""
+                              className="h-40 w-full object-cover"
+                              referrerPolicy="no-referrer"
+                              onError={() =>
+                                setFailedImages((prev) => ({ ...prev, [post.id]: true }))
+                              }
+                            />
                           </div>
-                          <div className="text-xs text-white/70">{platform.cta}</div>
-                        </div>
-                      )}
+                        ) : (
+                          <div
+                            className={`h-40 rounded-2xl border border-white/10 bg-gradient-to-br ${platform.fallback} flex flex-col items-center justify-center text-center gap-2 px-4`}
+                          >
+                            <div className="text-white/80">{platform.iconLarge}</div>
+                            <div className="text-sm font-semibold text-white">
+                              Preview not available
+                            </div>
+                            <div className="text-xs text-white/70">{platform.cta}</div>
+                          </div>
+                        )}
 
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-semibold text-white line-clamp-2">
-                          {post.title || `${platform.label} post`}
-                        </h3>
-                        {post.description ? (
-                          <p className="text-sm text-white/70 line-clamp-2">
-                            {post.description}
-                          </p>
-                        ) : null}
-                      </div>
+                        <div className="space-y-2">
+                          <h3 className="text-lg font-semibold text-white line-clamp-2">
+                            {post.title || `${platform.label} post`}
+                          </h3>
+                          {post.description ? (
+                            <p className="text-sm text-white/70 line-clamp-2">
+                              {post.description}
+                            </p>
+                          ) : null}
+                        </div>
 
                       <a
                         href={post.url}
@@ -260,8 +252,8 @@ export default function SocialClient({
               </div>
             </>
           )}
-        </div>
-      </section>
+        </section>
+      </Reveal>
     </div>
   );
 }

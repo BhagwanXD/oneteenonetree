@@ -21,6 +21,10 @@ export type AccountNavItem = {
 export const publicNavItems: NavItem[] = [
   { label: 'Home', href: '/', section: 'explore', desktop: 'primary', visibility: 'public' },
   { label: 'About', href: '/about', section: 'explore', desktop: 'primary', visibility: 'public' },
+  { label: 'Pledge', href: '/pledge', section: 'community', desktop: 'primary', visibility: 'public' },
+  { label: 'Plant', href: '/plant', section: 'community', desktop: 'primary', visibility: 'public' },
+  { label: 'Donate', href: '/donate', section: 'community', desktop: 'primary', visibility: 'public' },
+  { label: 'Insights', href: '/insights', section: 'resources', desktop: 'primary', visibility: 'public' },
   {
     label: 'Our Team',
     href: '/our-team',
@@ -35,9 +39,6 @@ export const publicNavItems: NavItem[] = [
     desktop: 'more',
     visibility: 'public',
   },
-  { label: 'Pledge', href: '/pledge', section: 'community', desktop: 'primary', visibility: 'public' },
-  { label: 'Plant', href: '/plant', section: 'community', desktop: 'primary', visibility: 'public' },
-  { label: 'Donate', href: '/donate', section: 'community', desktop: 'primary', visibility: 'public' },
   { label: 'Social', href: '/social', section: 'community', desktop: 'more', visibility: 'public' },
   { label: 'Gallery', href: '/gallery', section: 'community', desktop: 'more', visibility: 'public' },
   { label: 'Blog', href: '/blog', section: 'resources', desktop: 'more', visibility: 'public' },

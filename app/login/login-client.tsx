@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Icon from '@/components/Icon'
+import useNavigateWithLoader from '@/components/site/useNavigateWithLoader'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -44,7 +45,7 @@ const GoogleIcon = () => (
 )
 
 export default function LoginClient() {
-  const router = useRouter()
+  const { replace } = useNavigateWithLoader()
   const searchParams = useSearchParams()
   const supabase = useMemo(() => createClientComponentClient(), [])
   const [showEmail, setShowEmail] = useState(false)
@@ -66,13 +67,13 @@ export default function LoginClient() {
     supabase.auth.getUser().then(({ data }) => {
       if (!mounted) return
       if (data.user) {
-        router.replace(nextPath)
+        replace(nextPath)
       }
     })
     return () => {
       mounted = false
     }
-  }, [nextPath, router, supabase])
+  }, [nextPath, replace, supabase])
 
   useEffect(() => {
     if (otpCooldown <= 0) return

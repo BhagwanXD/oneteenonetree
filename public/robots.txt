@@ -1,3 +1,4 @@
+# *
 User-agent: *
 Allow: /
 Disallow: /admin
@@ -8,5 +9,8 @@ Disallow: /dashboard
 Disallow: /dashboard/
 Disallow: /debug/
 
+# Host
 Host: https://oneteenonetree.org
+
+# Sitemaps
 Sitemap: https://oneteenonetree.org/sitemap.xml

@@ -1,165 +1,71 @@
-import Link from 'next/link'
+import SmartLink from '@/components/site/SmartLink'
 import Image from 'next/image'
 import Reveal from '@/components/Reveal'
-import CountUp from '@/components/CountUp'
- 
-import { cookies } from 'next/headers'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { fetchRssFeed } from '@/lib/rss'
+import PageShell from '@/components/site/PageShell'
+import PageHeader from '@/components/site/PageHeader'
+import { Suspense } from 'react'
+import ImpactStats, { ImpactStatsSkeleton } from './home/ImpactStats'
+import CampusUnmutedSection, { CampusUnmutedSkeleton } from './home/CampusUnmutedSection'
 
 // Revalidate homepage every 5 minutes
 export const revalidate = 300
-
-type Pledge = {
-  trees: number | null
-  school: string | null
-  city: string | null
-  state: string | null
-  country: string | null
-}
-
-// ---- Helpers ---------------------------------------------------------------
-
-
-async function getPledges() {
-  const cookieStore = await cookies()
-  const supabase = createServerComponentClient({ cookies: () => cookieStore as any })
-
-  const { data, error } = await supabase
-    .from('pledges')
-    .select('trees,school,city,state,country')
-
-  if (error) {
-    console.error('[pledges]', error.message)
-    return [] as Pledge[]
-  }
-  return (data ?? []) as Pledge[]
-}
-
-async function getLeaderboard() {
-  // If tsconfig has "resolveJsonModule": true, you can import json directly.
-  // Works fine in Next 14/15 in the app router:
-  const mod = await import('@/data/leaderboard.json')
-  return (mod.default ?? mod) as {
-    name?: string
-    trees?: number
-    school?: string
-    city?: string
-    state?: string
-    country?: string
-  }[]
-}
-
-function uniq<T>(arr: T[]) {
-  return Array.from(new Set(arr.filter(Boolean)))
-}
-
-function sumTrees(arr: { trees?: number | null }[]) {
-  return arr.reduce((a, b) => a + (Number(b.trees) || 0), 0)
-}
-
-// ---- Page ------------------------------------------------------------------
-
-// ---- Page ------------------------------------------------------------------
-
-export default async function Home() {
-  // data sources
-  const [pledges, leaderboard] = await Promise.all([getPledges(), getLeaderboard()])
-
-  // stats
-  const totalPledges = pledges.length
-  const verifiedTrees = sumTrees(leaderboard) // verified = from leaderboard only
-  const allSchools = uniq([
-    ...pledges.map((p) => (p.school ?? '').trim()),
-    ...leaderboard.map((l) => (l.school ?? '').trim()),
-  ]).length
-  const allCities = uniq([
-    ...pledges.map((p) => [p.city, p.state, p.country].filter(Boolean).join(', ').trim()),
-    ...leaderboard.map((l) => [l.city, l.state, l.country].filter(Boolean).join(', ').trim()),
-  ]).filter(Boolean).length
-
-  const cuItems = await (async () => {
-    try {
-      return await fetchRssFeed(process.env.CAMPUS_UNMUTED_RSS || 'https://campusunmuted.site/rss.xml')
-    } catch {
-      return [] as { title: string; link: string; description?: string }[]
-    }
-  })()
-
+export default function Home() {
   return (
-    <>
-      {/* Full-bleed hero with animated CTAs */}
-      <section className="bleed hero py-16 md:py-24">
-        <div className="container text-center">
-          <Reveal>
-            <Reveal>
-  <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap">
-    <Image
-      src="/logo.png"
-      alt="OneTeenOneTree Logo"
-      width={60}
-      height={60}
-      className="rounded-xl md:w-[70px] md:h-[70px] w-[50px] h-[50px] object-contain"
-      priority
-    />
-    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-center">
-      OneTeenOneTree = One Tree <span className="text-[var(--acc)]">🌱</span>
-    </h1>
-  </div>
-</Reveal>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p className="text-white/80 mt-4 text-lg max-w-3xl mx-auto">
-              Take the pledge, plant a tree, inspire your friends. Let’s build a living leaderboard of youth-led climate action.
-            </p>
-          </Reveal>
-          <Reveal delay={0.2}>
-            <div className="mt-8 flex items-center justify-center gap-4">
-              <Link href="/pledge" className="btn">Pledge now</Link>
-              <Link href="/leaderboard" className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl border border-white/15 hover:bg-white/5 transition">
+    <PageShell
+      useContainer={false}
+      innerClassName="space-y-0"
+      header={
+        <PageHeader
+          size="hero"
+          containerClassName="max-w-5xl"
+          titleClassName="flex flex-wrap items-center justify-center gap-4 text-balance drop-shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
+          descriptionClassName="max-w-3xl text-white/75"
+          title={
+            <>
+              <span className="relative inline-flex h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 items-center justify-center rounded-full border border-white/25 bg-white/10 shadow-[0_0_28px_rgba(0,208,132,0.35)]">
+                <Image
+                  src="/logo.png"
+                  alt="OneTeenOneTree logo"
+                  width={44}
+                  height={44}
+                  priority
+                  sizes="(max-width: 640px) 28px, (max-width: 1024px) 36px, 44px"
+                  className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 object-contain"
+                />
+              </span>
+              <span className="text-balance">
+                OneTeenOneTree = One Tree <span aria-hidden="true">🌿</span>
+              </span>
+            </>
+          }
+          description={
+            <>
+              Take the pledge, plant a tree, inspire your friends.
+              <span className="block text-white/70">
+                Let&apos;s build a living leaderboard of youth-led climate action.
+              </span>
+            </>
+          }
+          actions={
+            <>
+              <SmartLink href="/pledge" className="btn rounded-full px-6 py-2.5">
+                Pledge now
+              </SmartLink>
+              <SmartLink
+                href="/leaderboard"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:bg-white/5 transition"
+              >
                 View leaderboard
-              </Link>
-            </div>
-          </Reveal>
+              </SmartLink>
+            </>
+          }
+        />
+      }
+    >
 
-          
-        </div>
-      </section>
-
-      {/* Impact counters (now real) */}
-      <section className="py-0">
-        <div className="container">
-          <Reveal>
-            <h2 className="text-3xl font-bold text-center">Real impact, growing daily</h2>
-          </Reveal>
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <Reveal>
-              <div className="card">
-                <div className="text-3xl font-extrabold"><CountUp to={totalPledges} /></div>
-                <p className="text-white/60 mt-1">Pledges</p>
-              </div>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <div className="card">
-                <div className="text-3xl font-extrabold"><CountUp to={verifiedTrees} /></div>
-                <p className="text-white/60 mt-1">Verified Trees</p>
-              </div>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <div className="card">
-                <div className="text-3xl font-extrabold"><CountUp to={allSchools} /></div>
-                <p className="text-white/60 mt-1">Schools & Colleges</p>
-              </div>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <div className="card">
-                <div className="text-3xl font-extrabold"><CountUp to={allCities} /></div>
-                <p className="text-white/60 mt-1">Cities</p>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
+      <Suspense fallback={<ImpactStatsSkeleton />}>
+        <ImpactStats />
+      </Suspense>
 
      {/* HOW IT WORKS — clean emoji version */}
 <section className="py-16">
@@ -189,68 +95,14 @@ export default async function Home() {
   </div>
 </section>
 
-      {/* Campus Unmuted partnership + live posts */}
-      <section className="py-20">
-        <div className="container">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold">From Campus Unmuted</h2>
-            <p className="text-white/70 mt-3">
-              <b>OneTeenOneTree</b> has partnered with <b>Campus Unmuted</b> to
-              bring authentic <i>student voices</i> to the movement—read, write, and be heard.
-            </p>
-          </div>
-
-          <div className="mt-10 grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8 items-start">
-            {/* Brand column */}
-            <div className="text-center lg:text-left">
-              <Image
-                src="/brand/campusunmuted-logo.svg" alt="Campus Unmuted"
-                width={180} height={180}
-                className="mx-auto lg:mx-0 rounded-2xl border border-white/10 bg-white/5 p-5"
-              />
-              <ul className="text-sm text-white/70 mt-5 space-y-2">
-                <li>🌍 Global student voices</li>
-                <li>✍️ Easy, fast publishing</li>
-                <li>🚀 Amplify impact with stories</li>
-              </ul>
-              <a
-                href="https://www.campusunmuted.site" target="_blank" rel="noreferrer"
-                className="inline-flex mt-5 px-4 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition"
-              >
-                Visit Campus Unmuted →
-              </a>
-            </div>
-
-            {/* Posts */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {(cuItems?.slice(0,3) ?? []).map((post:any, i:number) => (
-                <a key={i} href={post.link} target="_blank" rel="noreferrer"
-                   className="group rounded-2xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] transition flex flex-col">
-                  {/* Optional cover in future */}
-                  <div className="p-5 flex-1">
-                    <h3 className="font-semibold group-hover:text-[var(--acc)] line-clamp-2">{post.title}</h3>
-                    {post.description && (
-                      <p className="text-white/70 text-sm mt-2 line-clamp-3">{post.description}</p>
-                    )}
-                  </div>
-                  <div className="px-5 py-3 text-xs text-white/50 border-t border-white/10 flex items-center gap-2">
-                    <Image src="/brand/campusunmuted-mark.svg" alt="" width={16} height={16} />
-                    campusunmuted.site →
-                  </div>
-                </a>
-              ))}
-              {(!cuItems || cuItems.length === 0) && (
-                [1,2,3].map(i => <div key={i} className="rounded-2xl h-44 bg-white/5 animate-pulse" />)
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      <Suspense fallback={<CampusUnmutedSkeleton />}>
+        <CampusUnmutedSection />
+      </Suspense>
 
       {/* SDGs — compact grid cards with official UN icons */}
 <section className="py-16">
   <div className="container">
-    <h2 className="text-4xl md:text-5xl font-extrabold text-center">
+    <h2 className="text-4xl md:text-5xl font-semibold text-center">
       Aligned with the UN SDGs
     </h2>
     <p className="text-white/70 text-lg text-center mt-3">
@@ -310,12 +162,12 @@ export default async function Home() {
               <h3 className="text-2xl md:text-3xl font-bold">Ready to plant your first tree?</h3>
               <p className="text-white/70 mt-2">Join thousands of students making a real-world impact.</p>
               <div className="mt-5">
-                <Link href="/pledge" className="btn">Take the pledge</Link>
+                <SmartLink href="/pledge" className="btn">Take the pledge</SmartLink>
               </div>
             </div>
           </Reveal>
         </div>
       </section>
-    </>
+    </PageShell>
   )
 }

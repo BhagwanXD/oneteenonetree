@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { faqSections, type FaqAnswerPart } from './faq-data'
 import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
 
 const normalize = (value: string) => value.toLowerCase()
 
@@ -81,18 +82,8 @@ export default function FaqClient() {
 
   return (
     <div className="space-y-10">
-      <section className="space-y-4">
-        <h1 className="text-4xl md:text-5xl font-extrabold">
-          <span className="inline-flex items-center gap-2">
-            <Icon name="help" size={28} aria-hidden="true" />
-            Frequently Asked Questions
-          </span>
-        </h1>
-        <p className="text-white/70 text-lg max-w-3xl">
-          Answers about OneTeenOneTree, the pledge, planting drives, verification, donations, and
-          partnerships.
-        </p>
-        <div className="card max-w-3xl space-y-3">
+      <Reveal>
+        <section className="card max-w-3xl space-y-3">
           <label className="text-sm text-white/70" htmlFor="faq-search">
             Search questions
           </label>
@@ -117,85 +108,91 @@ export default function FaqClient() {
               ? `${totalMatches} question${totalMatches === 1 ? '' : 's'} found`
               : 'Search across all FAQs.'}
           </div>
-        </div>
-      </section>
+        </section>
+      </Reveal>
 
       {totalMatches === 0 ? (
-        <div className="card text-center text-white/70">
-          No matching questions. Try a different term.
-        </div>
+        <Reveal>
+          <div className="card text-center text-white/70">
+            No matching questions. Try a different term.
+          </div>
+        </Reveal>
       ) : (
         filteredSections.map((section) => (
-          <section key={section.title} className="space-y-4">
-            <h2 className="text-2xl md:text-3xl font-bold">{section.title}</h2>
-            <div className="space-y-3">
-              {section.items.map((item) => {
-                const isOpen = openId === item.id
-                const panelId = `faq-panel-${item.id}`
-                return (
-                  <div
-                    key={item.id}
-                    id={item.id}
-                    className="rounded-2xl border border-white/10 bg-white/[0.04] scroll-mt-28"
-                  >
-                    <div className="flex items-start gap-3 px-5 py-4">
-                      <button
-                        type="button"
-                        className="flex-1 text-left text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
-                        aria-expanded={isOpen}
-                        aria-controls={panelId}
-                        onClick={() => setOpenId(isOpen ? null : item.id)}
-                      >
-                        <span className="font-medium">{item.question}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(item.id)}
-                        className="text-xs text-white/60 hover:text-white transition flex items-center gap-1"
-                        aria-label={`Copy link to ${item.question}`}
-                      >
-                        <Icon name="link" size={14} aria-hidden="true" />
-                        {copiedId === item.id ? 'Copied' : 'Copy link'}
-                      </button>
-                      <Icon
-                        name="chevronDown"
-                        size={18}
-                        className={`text-white/60 transition ${isOpen ? 'rotate-180' : ''}`}
-                        aria-hidden="true"
-                      />
-                    </div>
+          <Reveal key={section.title}>
+            <section className="space-y-4">
+              <h2 className="text-2xl md:text-3xl font-bold">{section.title}</h2>
+              <div className="space-y-3">
+                {section.items.map((item) => {
+                  const isOpen = openId === item.id
+                  const panelId = `faq-panel-${item.id}`
+                  return (
                     <div
-                      id={panelId}
-                      role="region"
-                      aria-labelledby={item.id}
-                      className={`px-5 pb-4 text-sm text-white/70 space-y-3 ${
-                        isOpen ? 'block' : 'hidden'
-                      }`}
+                      key={item.id}
+                      id={item.id}
+                      className="rounded-2xl border border-white/10 bg-white/[0.04] scroll-mt-28"
                     >
-                      <div>{item.answer.map(renderAnswerPart)}</div>
+                      <div className="flex items-start gap-3 px-5 py-4">
+                        <button
+                          type="button"
+                          className="flex-1 text-left text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+                          aria-expanded={isOpen}
+                          aria-controls={panelId}
+                          onClick={() => setOpenId(isOpen ? null : item.id)}
+                        >
+                          <span className="font-medium">{item.question}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(item.id)}
+                          className="text-xs text-white/60 hover:text-white transition flex items-center gap-1"
+                          aria-label={`Copy link to ${item.question}`}
+                        >
+                          <Icon name="link" size={14} aria-hidden="true" />
+                          {copiedId === item.id ? 'Copied' : 'Copy link'}
+                        </button>
+                        <Icon
+                          name="chevronDown"
+                          size={18}
+                          className={`text-white/60 transition ${isOpen ? 'rotate-180' : ''}`}
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <div
+                        id={panelId}
+                        role="region"
+                        aria-labelledby={item.id}
+                        className={`px-5 pb-4 text-sm text-white/70 space-y-3 ${
+                          isOpen ? 'block' : 'hidden'
+                        }`}
+                      >
+                        <div>{item.answer.map(renderAnswerPart)}</div>
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
+                  )
+                })}
+              </div>
+            </section>
+          </Reveal>
         ))
       )}
 
-      <section className="card space-y-4">
-        <h2 className="text-2xl font-bold">Related links</h2>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/pledge" className="btn">
-            Take the pledge
-          </Link>
-          <Link href="/donate" className="btn">
-            Donate
-          </Link>
-          <Link href="/contact" className="btn">
-            Partner with us
-          </Link>
-        </div>
-      </section>
+      <Reveal>
+        <section className="card space-y-4">
+          <h2 className="text-2xl font-bold">Related links</h2>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/pledge" className="btn">
+              Take the pledge
+            </Link>
+            <Link href="/donate" className="btn">
+              Donate
+            </Link>
+            <Link href="/contact" className="btn">
+              Partner with us
+            </Link>
+          </div>
+        </section>
+      </Reveal>
     </div>
   )
 }

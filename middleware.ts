@@ -7,25 +7,28 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
 
-  // This refreshes the session and attaches cookies to the response,
-  // so Server Components (like your pledge page) can read the user.
-  await supabase.auth.getSession()
+  // Refresh the session and attach cookies to the response.
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
 
   const pathname = req.nextUrl.pathname
+  const isPlantRoute = pathname.startsWith('/plant')
   const isProtected =
     pathname.startsWith('/admin') ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/debug')
 
-  if (!isProtected) {
+  if (!isProtected && !isPlantRoute) {
     return res
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = session?.user
 
   if (!user?.id) {
+    if (isPlantRoute) {
+      return NextResponse.redirect(new URL('/pledge', req.url))
+    }
     const loginUrl = new URL('/', req.url)
     const nextValue = `${req.nextUrl.pathname}${req.nextUrl.search}`
     loginUrl.searchParams.set('next', nextValue)
@@ -59,7 +62,6 @@ export const config = {
   // Run middleware only where server-side auth/session is actually needed
   matcher: [
     '/dashboard/:path*',
-    '/pledge/:path*',
     '/plant/:path*',
     '/admin/:path*',
     '/debug/:path*',

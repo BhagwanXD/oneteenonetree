@@ -2,13 +2,13 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { useRouter } from 'next/navigation'
+import useNavigateWithLoader from '@/components/site/useNavigateWithLoader'
 
 type MediaItem = { type: 'photo' | 'video'; file: File }
 
 export default function PlantForm() {
   const supabase = createClientComponentClient()
-  const router = useRouter()
+  const { push } = useNavigateWithLoader()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const [caption, setCaption] = useState('')
@@ -70,7 +70,7 @@ export default function PlantForm() {
       return
     }
 
-    router.push('/pledge/success')
+    push('/pledge/success')
   }
 
   return (

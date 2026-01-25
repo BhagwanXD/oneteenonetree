@@ -1,6 +1,10 @@
 import { Suspense } from 'react'
 import PasswordLoginClient from './password-client'
 import { buildMetadata } from '@/lib/seo'
+import PageShell from '@/components/site/PageShell'
+import PageHeader from '@/components/site/PageHeader'
+import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
 
 export const metadata = buildMetadata({
   title: 'Password sign in',
@@ -11,10 +15,22 @@ export const metadata = buildMetadata({
 
 export default function PasswordLoginPage() {
   return (
-    <div className="container py-12 max-w-2xl">
-      <Suspense fallback={<div className="text-sm text-white/60">Loading…</div>}>
-        <PasswordLoginClient />
-      </Suspense>
-    </div>
+    <PageShell
+      header={
+        <PageHeader
+          title="Password sign in"
+          description="Use your email and password to access OneTeenOneTree."
+          icon={<Icon name="lock" size={22} aria-hidden="true" />}
+        />
+      }
+    >
+      <Reveal>
+        <div className="max-w-2xl mx-auto">
+          <Suspense fallback={null}>
+            <PasswordLoginClient />
+          </Suspense>
+        </div>
+      </Reveal>
+    </PageShell>
   )
 }

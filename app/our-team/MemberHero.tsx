@@ -40,7 +40,13 @@ const normalizeSocial = (value: string, type: SocialType) => {
   return socialConfig[type].buildUrl(cleaned)
 }
 
-export default function MemberHero({ member }: { member: TeamMember }) {
+export default function MemberHero({
+  member,
+  showTitle = true,
+}: {
+  member: TeamMember
+  showTitle?: boolean
+}) {
   const [useFallback, setUseFallback] = useState(false)
   const initials = useMemo(() => {
     const parts = member.name.split(' ').filter(Boolean)
@@ -59,64 +65,62 @@ export default function MemberHero({ member }: { member: TeamMember }) {
     .filter((item) => item.url)
 
   return (
-    <section className="py-12">
-      <div className="container">
-        <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] items-center">
-          <div className="relative w-full aspect-[4/5] rounded-3xl overflow-hidden border border-white/10 bg-white/5">
-            {!useFallback ? (
-              <Image
-                src={member.image}
-                alt={`${member.name} — OneTeenOneTree team member`}
-                fill
-                sizes="(min-width: 1024px) 40vw, (min-width: 640px) 60vw, 100vw"
-                className="object-cover"
-                onError={() => setUseFallback(true)}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-white/10 via-transparent to-white/5">
-                <span className="text-4xl font-semibold text-white/70">{initials}</span>
-              </div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+    <section className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] items-center">
+      <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+        {!useFallback ? (
+          <Image
+            src={member.image}
+            alt={`${member.name} — OneTeenOneTree team member`}
+            fill
+            sizes="(min-width: 1024px) 40vw, (min-width: 640px) 60vw, 100vw"
+            className="object-cover"
+            onError={() => setUseFallback(true)}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-white/10 via-transparent to-white/5">
+            <span className="text-4xl font-semibold text-white/70">{initials}</span>
           </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+      </div>
 
-          <div className="space-y-5">
-            <div className="space-y-3">
-              <span className="inline-flex items-center rounded-full border border-emerald-400/40 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-emerald-200/90">
-                {member.role}
-              </span>
-              <h1 className="text-4xl md:text-5xl font-extrabold">{member.name}</h1>
-              <p className="text-sm uppercase tracking-[0.22em] text-white/50">
-                {member.educationOrProfession}
-              </p>
-              {member.tagline ? (
-                <p className="text-white/70 text-lg">{member.tagline}</p>
-              ) : null}
-              {member.location ? (
-                <p className="text-sm text-white/50">Based in {member.location}</p>
-              ) : null}
-            </div>
+      <div className="space-y-5">
+        <div className="space-y-3">
+          <span className="inline-flex items-center rounded-full border border-emerald-400/40 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-emerald-200/90">
+            {member.role}
+          </span>
+          {showTitle ? (
+            <h1 className="text-4xl md:text-5xl font-semibold">{member.name}</h1>
+          ) : null}
+          <p className="text-sm uppercase tracking-[0.22em] text-white/50">
+            {member.educationOrProfession}
+          </p>
+          {member.tagline ? (
+            <p className="text-white/70 text-lg">{member.tagline}</p>
+          ) : null}
+          {member.location ? (
+            <p className="text-sm text-white/50">Based in {member.location}</p>
+          ) : null}
+        </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              {socials.length ? (
-                socials.map(({ type, url }) => (
-                  <a
-                    key={`${member.slug}-${type}`}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${socialConfig[type].label} — ${member.name}`}
+        <div className="flex flex-wrap items-center gap-2">
+          {socials.length ? (
+            socials.map(({ type, url }) => (
+              <a
+                key={`${member.slug}-${type}`}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${socialConfig[type].label} — ${member.name}`}
                 title={`${socialConfig[type].label} — ${member.name}`}
                 className="h-12 w-12 rounded-xl border border-white/10 bg-white/5 text-white/70 hover:text-white hover:bg-white/10 transition flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
               >
                 <Icon name={socialConfig[type].iconName} size={18} aria-hidden="true" />
               </a>
             ))
-              ) : (
-                <span className="text-xs text-white/50">Social links coming soon.</span>
-              )}
-            </div>
-          </div>
+          ) : (
+            <span className="text-xs text-white/50">Social links coming soon.</span>
+          )}
         </div>
       </div>
     </section>

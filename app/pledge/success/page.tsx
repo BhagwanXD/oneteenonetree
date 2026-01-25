@@ -2,6 +2,10 @@
 import { cookies } from 'next/headers'
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import SuccessClient from './success-client'
+import PageShell from '@/components/site/PageShell'
+import PageHeader from '@/components/site/PageHeader'
+import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
 
 export const dynamic = 'force-dynamic'
 export const metadata = {
@@ -32,11 +36,21 @@ export default async function PledgeSuccessPage() {
   const totalPledges = rowsArr.length
   const totalTrees = rowsArr.reduce((a, b) => a + (Number(b.trees) || 0), 0)
 
+  const headline = `Thank you ${firstName ? `${firstName}!` : 'friend!'}`
+
   return (
-    <SuccessClient
-      firstName={firstName}
-      totalPledges={totalPledges}
-      totalTrees={totalTrees}
-    />
+    <PageShell
+      header={
+        <PageHeader
+          title={headline}
+          description="Your pledge has been recorded — share it and keep the momentum going."
+          icon={<Icon name="award" size={22} aria-hidden="true" />}
+        />
+      }
+    >
+      <Reveal>
+        <SuccessClient totalPledges={totalPledges} totalTrees={totalTrees} />
+      </Reveal>
+    </PageShell>
   )
 }

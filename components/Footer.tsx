@@ -67,6 +67,12 @@ export default function Footer() {
                 Donate
               </Link>
               <Link
+                href="/insights"
+                className="text-white/70 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+              >
+                Insights
+              </Link>
+              <Link
                 href="/leaderboard"
                 className="text-white/70 hover:text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
               >
@@ -119,6 +125,15 @@ export default function Footer() {
                 aria-label="LinkedIn Company"
               >
                 <Icon name="linkedin" size={18} aria-hidden="true" />
+              </a>
+              <a
+                href="https://www.youtube.com/@oneteenonetree"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-11 w-11 rounded-xl border border-white/10 bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]"
+                aria-label="YouTube"
+              >
+                <Icon name="youtube" size={18} aria-hidden="true" />
               </a>
             </div>
           </div>

@@ -73,50 +73,35 @@ export default function CreateClient() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-8rem)]">
-      <section className="py-12 hero">
-        <div className="container text-center max-w-3xl mx-auto space-y-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold">
-            Create your OneTeenOneTree story card
-          </h1>
-          <p className="text-white/70 text-lg">
-            Generate a share-ready story card in seconds.
-          </p>
-        </div>
-      </section>
+    <section className="grid gap-8 lg:grid-cols-[1.05fr_1.1fr]">
+      <Controls
+        state={state}
+        onChange={updateState}
+        onPhotoChange={handlePhotoChange}
+        onDownload={handleDownload}
+        notice={notice}
+        hasPhoto={Boolean(photoUrl)}
+        canExport={canExport}
+        missingName={missingName}
+      />
 
-      <section className="py-12">
-        <div className="container grid gap-8 lg:grid-cols-[1.05fr_1.1fr]">
-          <Controls
-            state={state}
-            onChange={updateState}
-            onPhotoChange={handlePhotoChange}
-            onDownload={handleDownload}
-            notice={notice}
-            hasPhoto={Boolean(photoUrl)}
-            canExport={canExport}
-            missingName={missingName}
-          />
-
-          <div className="space-y-6">
-            <div className="card space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-xl font-semibold inline-flex items-center gap-2">
-                  <Icon name="camera" size={18} aria-hidden="true" />
-                  Live preview
-                </h2>
-                <div className="text-xs text-white/60">Size: {getSizeLabel(state.size)}</div>
-              </div>
-              <PosterCanvas state={state} photoUrl={photoUrl} canvasRef={canvasRef} />
-              <div className="flex flex-wrap gap-2 text-xs text-white/60">
-                <span className="rounded-full border border-white/10 px-3 py-1">
-                  Size: {getSizeLabel(state.size)}
-                </span>
-              </div>
-            </div>
+      <div className="space-y-6">
+        <div className="card space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold inline-flex items-center gap-2">
+              <Icon name="camera" size={18} aria-hidden="true" />
+              Live preview
+            </h2>
+            <div className="text-xs text-white/60">Size: {getSizeLabel(state.size)}</div>
+          </div>
+          <PosterCanvas state={state} photoUrl={photoUrl} canvasRef={canvasRef} />
+          <div className="flex flex-wrap gap-2 text-xs text-white/60">
+            <span className="rounded-full border border-white/10 px-3 py-1">
+              Size: {getSizeLabel(state.size)}
+            </span>
           </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   )
 }

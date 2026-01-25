@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
-import { FaYoutube } from 'react-icons/fa'
+import { Youtube } from 'lucide-react'
 
-export default function YoutubeIcon(props: ComponentProps<typeof FaYoutube>) {
-  return <FaYoutube {...props} />
+export default function YoutubeIcon(props: ComponentProps<typeof Youtube>) {
+  return <Youtube {...props} />
 }

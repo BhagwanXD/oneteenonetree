@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 
 /* ---------- Eco icons (inline SVGs) ---------- */
 function SunIcon({ className = "" }: { className?: string }) {
@@ -143,22 +142,9 @@ export default function EcoTacToeClient() {
       : null;
 
   return (
-    <section className="py-10">
-      <div className="container max-w-5xl">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold">Eco Tac-Toe</h1>
-            <p className="text-white/70 text-sm mt-1">
-              ☀️ vs 🌱 — first to 3 in a row wins. Two-player local game.
-            </p>
-          </div>
-          <Link href="/games" className="text-white/70 hover:text-white underline">
-            ← Back to Games
-          </Link>
-        </div>
-
-        {/* Scoreboard */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <section className="max-w-5xl mx-auto space-y-6">
+      {/* Scoreboard */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="card flex items-center justify-between">
             <div className="flex items-center gap-3">
               <SunIcon className="w-6 h-6 text-amber-300" />
@@ -187,8 +173,8 @@ export default function EcoTacToeClient() {
           </div>
         </div>
 
-        {/* Board & controls */}
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+      {/* Board & controls */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
           <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 md:p-6">
             {/* Status */}
             <div className="flex items-center justify-between mb-4">
@@ -253,7 +239,6 @@ export default function EcoTacToeClient() {
               Coming soon: best-of series, bot mode, and shareable results.
             </div>
           </aside>
-        </div>
       </div>
     </section>
   );

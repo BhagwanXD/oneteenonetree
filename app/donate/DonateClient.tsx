@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
+import { FileText, HelpCircle, PieChart, QrCode } from 'lucide-react'
 
 const breakdown = [
   { label: 'Saplings & materials', value: '40%' },
@@ -61,40 +63,20 @@ export default function DonateClient() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-8rem)]">
-      <section className="py-16">
-        <div className="container">
-          <div className="text-center max-w-2xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-extrabold">Donate</h1>
-            <p className="text-white/70 mt-3 text-lg">
-              Your support funds plantation drives, saplings, logistics, and community programs led
-              by young changemakers.
-            </p>
-            <a href="#payment-details" className="btn mt-6">
-              View payment details
-            </a>
-          </div>
+    <div className="space-y-12">
+      <Reveal>
+        <section id="payment-details" className="space-y-6">
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-semibold inline-flex items-center gap-2 justify-center">
+            <QrCode size={18} className="text-[var(--acc)]" />
+            Donate via UPI
+          </h2>
+          <p className="text-white/70 mt-2">Scan the QR or copy the UPI ID.</p>
         </div>
-      </section>
 
-      <section id="payment-details" className="py-16">
-        <div className="container">
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold">
-              <span className="inline-flex items-center gap-2">
-                <Icon name="volunteer" size={26} aria-hidden="true" />
-                Donate via UPI
-              </span>
-            </h2>
-            <p className="text-white/70 mt-2">
-              Scan the QR or copy the UPI ID.
-            </p>
-          </div>
-
-          <div className="mt-8">
-            <div className="card">
-              <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] items-center">
-                <div className="space-y-5">
+        <div className="card">
+          <div className="grid gap-8 md:grid-cols-[1.1fr_0.9fr] items-center">
+            <div className="space-y-5">
                   <div className="space-y-2">
                     <p className="text-xs uppercase tracking-wider text-white/60">UPI Payment</p>
                     <h3 className="text-2xl font-semibold text-white">
@@ -156,54 +138,59 @@ export default function DonateClient() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex items-center justify-center">
-                  {!qrError ? (
-                    <Image
-                      src="/images/donate/upi-qr.png"
-                      alt="OneTeenOneTree UPI QR code"
-                      width={260}
-                      height={260}
-                      className="w-full max-w-[260px] h-auto rounded-lg"
-                      onError={() => setQrError(true)}
-                    />
-                  ) : (
-                    <div className="text-sm text-white/60 text-center">
-                      QR unavailable. Use the UPI ID above.
-                    </div>
-                  )}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 flex items-center justify-center">
+              {!qrError ? (
+                <Image
+                  src="/images/donate/upi-qr.png"
+                  alt="OneTeenOneTree UPI QR code"
+                  width={260}
+                  height={260}
+                  className="w-full max-w-[260px] h-auto rounded-lg"
+                  onError={() => setQrError(true)}
+                />
+              ) : (
+                <div className="text-sm text-white/60 text-center">
+                  QR unavailable. Use the UPI ID above.
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      </Reveal>
 
-      <section className="py-16">
-        <div className="container">
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold">Where your money goes</h2>
-            <p className="text-white/60 mt-2">Indicative breakdown (updated periodically).</p>
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {breakdown.map((item) => (
-              <div key={item.label} className="card text-center space-y-2">
-                <div className="text-3xl font-extrabold text-[var(--acc)]">{item.value}</div>
-                <p className="text-sm text-white/70">{item.label}</p>
-              </div>
-            ))}
-          </div>
+      <Reveal>
+        <section className="space-y-6">
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-semibold inline-flex items-center gap-2 justify-center">
+            <PieChart size={18} className="text-[var(--acc)]" />
+            Where your money goes
+          </h2>
+          <p className="text-white/60 mt-2">Indicative breakdown (updated periodically).</p>
         </div>
-      </section>
 
-      <section className="py-16">
-        <div className="container">
-          <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold">FAQs</h2>
-            <p className="text-white/60 mt-2">Quick answers to common donation questions.</p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {breakdown.map((item) => (
+            <div key={item.label} className="card text-center space-y-2">
+              <div className="text-3xl font-extrabold text-[var(--acc)]">{item.value}</div>
+              <p className="text-sm text-white/70">{item.label}</p>
+            </div>
+          ))}
+        </div>
+        </section>
+      </Reveal>
 
-          <div className="mt-8 max-w-3xl mx-auto space-y-3">
+      <Reveal>
+        <section className="space-y-6">
+        <div className="text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-semibold inline-flex items-center gap-2 justify-center">
+            <HelpCircle size={18} className="text-[var(--acc)]" />
+            FAQs
+          </h2>
+          <p className="text-white/60 mt-2">Quick answers to common donation questions.</p>
+        </div>
+
+        <div className="max-w-3xl mx-auto space-y-3">
             {faqs.map((faq, index) => {
               const isOpen = openIndex === index
               return (
@@ -235,30 +222,25 @@ export default function DonateClient() {
                 </div>
               )
             })}
-          </div>
         </div>
-      </section>
+        </section>
+      </Reveal>
 
-      <section className="py-16">
-        <div className="container">
+      <Reveal>
+        <section>
           <div className="card text-center max-w-2xl mx-auto space-y-4">
-            <h2 className="text-3xl font-bold">Receipt request</h2>
-            <p className="text-white/70">
-              Download the form and submit it after your donation.
-            </p>
-            <a
-              href="/forms/receipt-request-form.html"
-              download
-              className="btn justify-center"
-            >
+            <h2 className="text-2xl md:text-3xl font-semibold inline-flex items-center gap-2 justify-center">
+              <FileText size={18} className="text-[var(--acc)]" />
+              Receipt request
+            </h2>
+            <p className="text-white/70">Download the form and submit it after your donation.</p>
+            <a href="/forms/receipt-request-form.html" download className="btn justify-center">
               Download Receipt Request Form
             </a>
-            <p className="text-sm text-white/60">
-              Fill this form and submit via our Contact page.
-            </p>
+            <p className="text-sm text-white/60">Fill this form and submit via our Contact page.</p>
           </div>
-        </div>
-      </section>
+        </section>
+      </Reveal>
     </div>
   )
 }

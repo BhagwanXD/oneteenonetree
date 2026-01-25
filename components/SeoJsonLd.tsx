@@ -15,6 +15,7 @@ export default function SeoJsonLd() {
           'https://www.instagram.com/oneteen.onetree/',
           'https://www.linkedin.com/company/oneteen-onetree/',
           'https://www.linkedin.com/in/utkarshsngh/',
+          'https://www.youtube.com/@oneteenonetree',
         ],
         description:
           'OneTeenOneTree empowers students to take climate action by pledging to plant trees and inspire their peers.',
@@ -46,6 +47,7 @@ export default function SeoJsonLd() {
           { '@type': 'SiteNavigationElement', name: 'Pledge', url: `${siteUrl}/pledge` },
           { '@type': 'SiteNavigationElement', name: 'Plant', url: `${siteUrl}/plant` },
           { '@type': 'SiteNavigationElement', name: 'Donate', url: `${siteUrl}/donate` },
+          { '@type': 'SiteNavigationElement', name: 'Insights', url: `${siteUrl}/insights` },
           { '@type': 'SiteNavigationElement', name: 'Leaderboard', url: `${siteUrl}/leaderboard` },
           { '@type': 'SiteNavigationElement', name: 'Blog', url: `${siteUrl}/blog` },
           { '@type': 'SiteNavigationElement', name: 'Social', url: `${siteUrl}/social` },

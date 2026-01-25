@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 export const siteUrl = 'https://oneteenonetree.org'
 
 export const defaultDescription =
-  'OneTeenOneTree empowers students worldwide to take climate action by pledging to plant and care for trees - inspiring a generation of eco-conscious youth.'
+  'OneTeenOneTree is a youth-led environmental initiative and climate action movement turning pledges into real trees through verified community drives in India.'
 
 export const defaultOgImage = `${siteUrl}/og.png`
 
@@ -52,6 +52,7 @@ export const buildMetadata = ({
       ],
     },
     twitter: {
+      card: 'summary_large_image',
       title: formattedTitle,
       description: resolvedDescription,
       images: [resolvedImage],

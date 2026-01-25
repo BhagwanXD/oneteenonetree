@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import useNavigateWithLoader from '@/components/site/useNavigateWithLoader';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useProfile } from '@/components/ProfileProvider';
 
 export default function PledgeForm({ userId }: { userId: string }) {
   const supabase = createClientComponentClient();
-  const router = useRouter();
+  const { push } = useNavigateWithLoader();
   const { profile, loading } = useProfile();
 
   const [trees, setTrees] = useState(1);
@@ -45,7 +45,7 @@ export default function PledgeForm({ userId }: { userId: string }) {
       setStatus({ ok: true, msg: 'Thank you! Redirecting…' });
       setTrees(1);
       // Navigate immediately without artificial delay
-      router.push('/pledge/success');
+      push('/pledge/success');
     }
   };
 
@@ -56,7 +56,7 @@ export default function PledgeForm({ userId }: { userId: string }) {
 
   return (
     <section className="mx-auto max-w-3xl w-full">
-      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 md:p-8">
+      <div className="card md:p-8">
         <h2 className="text-xl font-semibold text-white mb-6">
           Make your pledge
         </h2>

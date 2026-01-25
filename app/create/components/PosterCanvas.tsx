@@ -388,7 +388,7 @@ export default function PosterCanvas({ state, photoUrl, canvasRef }: PosterCanva
   return (
     <canvas
       ref={canvasRef}
-      className="w-full h-auto rounded-3xl border border-white/10 bg-black/20"
+      className="w-full h-auto rounded-2xl border border-white/10 bg-black/20"
       aria-label="Poster preview"
     />
   )

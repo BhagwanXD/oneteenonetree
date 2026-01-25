@@ -3,14 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import SignInButton from '@/app/pledge/SignInButton';
-import type { User } from '@supabase/supabase-js';
 import { useProfile } from '@/components/ProfileProvider';
 import { accountNavItems, filterAccountItems, publicNavItems } from '@/lib/navigation';
 import Icon from '@/components/Icon';
+import { markNavClick } from '@/components/NavigationPerf';
 import type { IconName } from '@/components/icons';
 
 type MoreMenuItem = {
@@ -62,17 +62,26 @@ const NavLink = ({
   href,
   children,
   onClick,
+  onPrefetch,
+  isActive,
+  prefetch = true,
 }: {
   href: string;
   children: React.ReactNode;
   onClick?: () => void;
+  onPrefetch?: (href: string) => void;
+  isActive?: boolean;
+  prefetch?: boolean;
 }) => {
   const pathname = usePathname();
-  const active = pathname === href;
+  const active = isActive ?? pathname === href;
   return (
     <Link
       href={href}
+      prefetch={prefetch}
       onClick={onClick}
+      onMouseEnter={() => onPrefetch?.(href)}
+      onFocus={() => onPrefetch?.(href)}
       className={`px-3 py-1.5 rounded-xl transition-colors ${
         active ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white hover:bg-white/5'
       } focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)]`}
@@ -84,8 +93,6 @@ const NavLink = ({
 
 export default function Header() {
   const supabase = useMemo(() => createClientComponentClient(), []);
-  const [user, setUser] = useState<User | null>(null);
-  const [authLoading, setAuthLoading] = useState(true);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -94,27 +101,9 @@ export default function Header() {
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const prefetched = useRef(new Set<string>());
 
-  // ← NEW: live profile from our DB
-  const { profile, loading: profileLoading } = useProfile();
-
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (mounted) {
-        setUser(data.user ?? null);
-        setAuthLoading(false);
-      }
-    })();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [supabase]);
+  const { profile, loading: profileLoading, user } = useProfile();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -137,11 +126,47 @@ export default function Header() {
   const moreMenuItems = moreMenuGroups.flatMap((group) => group.items);
   const showMoreActive = moreMenuItems.some((item) => item.href === pathname);
   const accountItems = filterAccountItems({ items: accountNavItems, isAuthed: !!user, role });
+  const resolveHref = (href: string) =>
+    href === '/plant' && !user ? (profileLoading ? '/plant' : '/pledge') : href;
 
   const handleCloseMenus = () => {
     setIsMoreOpen(false);
     setIsUserMenuOpen(false);
   };
+
+  const handleNavClick = (href: string, cb?: () => void) => () => {
+    markNavClick(href);
+    cb?.();
+  };
+
+  const prefetchRoute = useCallback((href: string) => {
+    if (!href || href.startsWith('http')) return;
+    if (href.startsWith('/admin')) return;
+    if (prefetched.current.has(href)) return;
+    prefetched.current.add(href);
+    router.prefetch(href);
+  }, [router]);
+
+  useEffect(() => {
+    const coreRoutes = [
+      '/',
+      '/about',
+      '/pledge',
+      '/plant',
+      '/donate',
+      '/gallery',
+      '/insights',
+      '/faq',
+      '/contact',
+      '/leaderboard',
+    ];
+    const navRoutes = [
+      ...publicNavItems.map((item) => item.href),
+      ...moreMenuGroups.flatMap((group) => group.items.map((item) => item.href)),
+    ];
+    const uniqueRoutes = Array.from(new Set([...coreRoutes, ...navRoutes]));
+    uniqueRoutes.forEach((href) => prefetchRoute(href));
+  }, [prefetchRoute]);
 
   const openMoreMenu = () => {
     if (moreMenuCloseTimer.current) {
@@ -206,6 +231,7 @@ export default function Header() {
             alt="OneTeenOneTree logo"
             width={36}
             height={36}
+            sizes="36px"
             className="rounded-lg"
             priority
           />
@@ -216,11 +242,20 @@ export default function Header() {
 
         {/* Center: nav */}
         <nav className="hidden lg:flex items-center gap-1 text-sm">
-          {primaryItems.map((item) => (
-            <NavLink key={item.href} href={item.href}>
+          {primaryItems.map((item) => {
+            const href = resolveHref(item.href);
+            return (
+            <NavLink
+              key={item.href}
+              href={href}
+              isActive={pathname === item.href}
+              onClick={handleNavClick(href)}
+              onPrefetch={prefetchRoute}
+              prefetch
+            >
               {item.label}
             </NavLink>
-          ))}
+          )})}
 
           <div
             className="relative"
@@ -265,14 +300,20 @@ export default function Header() {
                         {group.label}
                       </p>
                       <div className="mt-2 grid gap-1">
-                        {group.items.map((item) => (
+                        {group.items.map((item) => {
+                          const href = resolveHref(item.href)
+                          const active = pathname === item.href
+                          return (
                           <Link
                             key={item.href}
-                            href={item.href}
+                            href={href}
+                            prefetch
                             role="menuitem"
-                            onClick={() => setIsMoreOpen(false)}
+                            onClick={handleNavClick(href, () => setIsMoreOpen(false))}
+                            onMouseEnter={() => prefetchRoute(href)}
+                            onFocus={() => prefetchRoute(href)}
                             className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acc)] ${
-                              pathname === item.href
+                              active
                                 ? 'bg-white/10 text-white'
                                 : 'text-white/70 hover:text-white hover:bg-white/5'
                             }`}
@@ -280,7 +321,7 @@ export default function Header() {
                             <Icon name={item.icon} size={16} className="text-white/60" aria-hidden="true" />
                             {item.label}
                           </Link>
-                        ))}
+                        )})}
                       </div>
                       {index < moreMenuGroups.length - 1 ? (
                         <div className="mt-3 h-px bg-white/10" />
@@ -304,7 +345,7 @@ export default function Header() {
           >
             <Icon name="menu" size={18} aria-hidden="true" />
           </button>
-          {authLoading ? (
+          {profileLoading ? (
             <span className="text-white/60 text-sm">…</span>
           ) : user ? (
             <div className="relative hidden lg:block" ref={userMenuRef}>
@@ -396,18 +437,23 @@ export default function Header() {
                           : 'Resources'}
                     </p>
                     <div className="mt-3 grid gap-2">
-                      {sectionItems.map((item) => (
+                      {sectionItems.map((item) => {
+                        const href = resolveHref(item.href)
+                        return (
                         <NavLink
                           key={item.href}
-                          href={item.href}
-                          onClick={() => {
+                          href={href}
+                          isActive={pathname === item.href}
+                          onClick={handleNavClick(href, () => {
                             setIsMobileOpen(false);
                             handleCloseMenus();
-                          }}
+                          })}
+                          onPrefetch={prefetchRoute}
+                          prefetch
                         >
                           {item.label}
                         </NavLink>
-                      ))}
+                      )})}
                     </div>
                   </div>
                 );
@@ -423,6 +469,7 @@ export default function Header() {
                           key={item.href}
                           href={item.href}
                           onClick={() => setIsMobileOpen(false)}
+                          onPrefetch={prefetchRoute}
                         >
                           {item.label}
                         </NavLink>

@@ -1,24 +1,35 @@
 'use client'
-import { motion, useAnimation, useReducedMotion } from 'framer-motion'
-import { useEffect } from 'react'
-import { useInView } from 'react-intersection-observer'
 
-export default function Reveal({ children, delay=0 }:{children: React.ReactNode, delay?: number}){
-  const controls = useAnimation()
+import { motion, useReducedMotion } from 'framer-motion'
+import { revealTransition, revealVariants } from '@/lib/motion'
+
+export default function Reveal({
+  children,
+  delay = 0,
+  className,
+  amount = 0.2,
+}: {
+  children: React.ReactNode
+  delay?: number
+  className?: string
+  amount?: number
+}) {
   const prefersReduced = useReducedMotion()
-  const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: true })
-  useEffect(()=>{ if(inView) controls.start('visible') }, [inView, controls])
+  const variants = prefersReduced
+    ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
+    : revealVariants
+  const transition = prefersReduced
+    ? { duration: 0.2, ease: 'easeOut', delay: 0 }
+    : { ...revealTransition, delay }
+
   return (
     <motion.div
-      ref={ref}
+      className={className}
       initial="hidden"
-      animate={controls}
-      variants={{
-        hidden: prefersReduced ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.99 },
-        visible: prefersReduced
-          ? { opacity: 1, transition: { duration: 0.15, delay: 0 } }
-          : { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: 'easeOut', delay } }
-      }}
+      whileInView="visible"
+      viewport={{ once: true, amount }}
+      variants={variants}
+      transition={transition}
     >
       {children}
     </motion.div>

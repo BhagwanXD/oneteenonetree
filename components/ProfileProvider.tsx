@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import type { User } from '@supabase/supabase-js';
 
 export type Profile = {
   id?: string;
@@ -22,12 +23,14 @@ export type Profile = {
 };
 
 type ProfileContextType = {
+  user: User | null;
   profile: Profile | null;
   loading: boolean;
   refreshProfile: () => Promise<void>;
 };
 
 const ProfileContext = createContext<ProfileContextType>({
+  user: null,
   profile: null,
   loading: true,
   refreshProfile: async () => {},
@@ -37,16 +40,18 @@ export const useProfile = () => useContext(ProfileContext);
 
 export default function ProfileProvider({ children }: { children: ReactNode }) {
   const supabase = createClientComponentClient();
+  const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = useCallback(async () => {
+  const fetchProfile = useCallback(async (userOverride?: User | null) => {
     setLoading(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const resolvedUser =
+      userOverride ?? (await supabase.auth.getUser()).data.user ?? null;
 
-    if (!user) {
+    setUser(resolvedUser);
+
+    if (!resolvedUser) {
       setProfile(null);
       setLoading(false);
       return;
@@ -55,7 +60,7 @@ export default function ProfileProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase
       .from('profiles')
       .select('id,name,country,state,city,school,role')
-      .eq('id', user.id)
+      .eq('id', resolvedUser.id)
       .maybeSingle(); // <- avoids throw if the row hasn't been created yet
 
     if (error) {
@@ -75,9 +80,9 @@ export default function ProfileProvider({ children }: { children: ReactNode }) {
     // keep in sync with auth changes (login/logout)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!active) return;
-      fetchProfile();
+      fetchProfile(session?.user ?? null);
     });
 
     return () => {
@@ -92,9 +97,6 @@ export default function ProfileProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     (async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       if (!user || cancelled) return;
 
       channel = supabase
@@ -121,11 +123,11 @@ export default function ProfileProvider({ children }: { children: ReactNode }) {
       cancelled = true;
       if (channel) supabase.removeChannel(channel);
     };
-  }, [fetchProfile, supabase]);
+  }, [user, supabase]);
 
   const value = useMemo(
-    () => ({ profile, loading, refreshProfile: fetchProfile }),
-    [profile, loading, fetchProfile]
+    () => ({ user, profile, loading, refreshProfile: fetchProfile }),
+    [user, profile, loading, fetchProfile]
   );
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;

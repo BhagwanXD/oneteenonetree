@@ -3,7 +3,7 @@ export type AdminSection = {
   navLabel: string
   href: string
   description: string
-  icon: 'checklist' | 'settings' | 'mail' | 'upload'
+  icon: 'checklist' | 'settings' | 'mail' | 'upload' | 'article'
 }
 
 export const adminSections: AdminSection[] = [
@@ -34,5 +34,12 @@ export const adminSections: AdminSection[] = [
     href: '/admin/gallery',
     description: 'Upload and organize public gallery photos.',
     icon: 'upload',
+  },
+  {
+    title: 'Insights manager',
+    navLabel: 'Insights',
+    href: '/admin/insights',
+    description: 'Create, edit, and publish insights articles.',
+    icon: 'article',
   },
 ]

@@ -1,5 +1,9 @@
 import ResetPasswordClient from './reset-password-client'
 import { buildMetadata } from '@/lib/seo'
+import PageShell from '@/components/site/PageShell'
+import PageHeader from '@/components/site/PageHeader'
+import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
 
 export const metadata = buildMetadata({
   title: 'Update password',
@@ -10,12 +14,20 @@ export const metadata = buildMetadata({
 
 export default function ResetPasswordPage() {
   return (
-    <div className="container py-12 space-y-6 max-w-2xl">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Reset password</h1>
-        <p className="text-white/70">Choose a new password to finish resetting your account.</p>
-      </div>
-      <ResetPasswordClient />
-    </div>
+    <PageShell
+      header={
+        <PageHeader
+          title="Reset password"
+          description="Choose a new password to finish resetting your account."
+          icon={<Icon name="lock" size={22} aria-hidden="true" />}
+        />
+      }
+    >
+      <Reveal>
+        <div className="max-w-2xl mx-auto">
+          <ResetPasswordClient />
+        </div>
+      </Reveal>
+    </PageShell>
   )
 }

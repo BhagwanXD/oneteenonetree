@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import useNavigateWithLoader from '@/components/site/useNavigateWithLoader'
 
 export default function ResetPasswordClient() {
   const supabase = useMemo(() => createClientComponentClient(), [])
-  const router = useRouter()
+  const { replace } = useNavigateWithLoader()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [status, setStatus] = useState('')
@@ -49,7 +49,7 @@ export default function ResetPasswordClient() {
       return
     }
     setStatus('Password updated.')
-    router.replace('/login?reset=success')
+    replace('/login?reset=success')
   }
 
   if (!ready) {

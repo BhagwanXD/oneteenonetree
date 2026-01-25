@@ -4,6 +4,10 @@ import { notFound } from 'next/navigation'
 import MemberHero from '../MemberHero'
 import { getTeamMemberBySlug, visibleTeamMembers } from '@/data/team'
 import { defaultOgImage, siteUrl } from '@/lib/seo'
+import PageShell from '@/components/site/PageShell'
+import PageHeader from '@/components/site/PageHeader'
+import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -64,9 +68,7 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default function TeamMemberPage({ params }: PageProps) {
-  return (
-    <TeamMemberContent params={params} />
-  )
+  return <TeamMemberContent params={params} />
 }
 
 async function TeamMemberContent({ params }: PageProps) {
@@ -91,93 +93,101 @@ async function TeamMemberContent({ params }: PageProps) {
     },
   }
 
+  const headerDescription = member.tagline
+    ? member.tagline
+    : `${member.role}${member.location ? ` • Based in ${member.location}` : ''}`
+
   return (
-    <div className="min-h-[calc(100vh-8rem)]">
+    <PageShell
+      header={
+        <PageHeader
+          title={member.name}
+          description={headerDescription}
+          icon={<Icon name="user" size={22} aria-hidden="true" />}
+        />
+      }
+    >
       <Script
         id={`person-schema-${member.slug}`}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
 
-      <MemberHero member={member} />
+      <Reveal>
+        <MemberHero member={member} showTitle={false} />
+      </Reveal>
 
-      <section className="py-10">
-        <div className="container space-y-6">
-          <Link
-            href="/our-team"
-            className="text-sm text-white/60 hover:text-white transition inline-flex"
-          >
-            Back to Our Team
-          </Link>
+      <section className="space-y-6">
+        <Link
+          href="/our-team"
+          className="text-sm text-white/60 hover:text-white transition inline-flex"
+        >
+          Back to Our Team
+        </Link>
 
-          <div className="space-y-3">
-            <h2 className="text-2xl md:text-3xl font-bold">About {member.name}</h2>
-            {(member.longBio ?? []).map((paragraph) => (
-              <p key={paragraph} className="text-white/70 text-base leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+        <div className="space-y-3">
+          <h2 className="text-2xl md:text-3xl font-semibold">About {member.name}</h2>
+          {(member.longBio ?? []).map((paragraph) => (
+            <p key={paragraph} className="text-white/70 text-base leading-relaxed">
+              {paragraph}
+            </p>
+          ))}
         </div>
       </section>
 
       {member.highlights?.length ? (
-        <section className="py-10">
-          <div className="container space-y-4">
-            <h2 className="text-2xl md:text-3xl font-bold">Focus areas</h2>
-            <div className="grid gap-4 md:grid-cols-3">
-              {member.highlights.map((item) => (
-                <div key={item} className="card p-5">
-                  <p className="text-sm text-white/70">{item}</p>
-                </div>
-              ))}
-            </div>
+        <section className="space-y-4">
+          <h2 className="text-2xl md:text-3xl font-semibold">Focus areas</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {member.highlights.map((item) => (
+              <div key={item} className="card p-5">
+                <p className="text-sm text-white/70">{item}</p>
+              </div>
+            ))}
           </div>
         </section>
       ) : null}
 
-      <section className="py-10">
-        <div className="container grid gap-6 md:grid-cols-[1.1fr_0.9fr] items-center">
-          <div className="space-y-3">
-            <h2 className="text-2xl md:text-3xl font-bold">Collaborate with OneTeenOneTree</h2>
-            <p className="text-white/70">
-              Have an idea for a student-led tree plantation drive or a partnership? We would love
-              to hear from you.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/contact" className="btn">
-                Get in touch
-              </Link>
-              <Link href="/pledge" className="btn">
-                Take the pledge
-              </Link>
-              <Link href="/plant" className="btn">
-                Plant & verify
-              </Link>
-              <Link href="/donate" className="btn">
-                Donate
-              </Link>
-            </div>
+      <section className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] items-center">
+        <div className="space-y-3">
+          <h2 className="text-2xl md:text-3xl font-semibold">Collaborate with OneTeenOneTree</h2>
+          <p className="text-white/70">
+            Have an idea for a student-led tree plantation drive or a partnership? We would love
+            to hear from you.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/contact" className="btn">
+              Get in touch
+            </Link>
+            <Link href="/pledge" className="btn">
+              Take the pledge
+            </Link>
+            <Link href="/plant" className="btn">
+              Plant & verify
+            </Link>
+            <Link href="/donate" className="btn">
+              Donate
+            </Link>
           </div>
-          <div className="card p-5 space-y-3">
-            <h3 className="text-lg font-semibold">Quick links</h3>
-            <p className="text-sm text-white/70">
-              Explore how OneTeenOneTree turns student action into verified impact.
-            </p>
-            <div className="flex flex-col gap-2 text-sm text-white/70">
-              <Link href="/pledge" className="hover:text-white transition">
-                How the pledge works
-              </Link>
-              <Link href="/plant" className="hover:text-white transition">
-                Verification and planting guide
-              </Link>
-              <Link href="/donate" className="hover:text-white transition">
-                Support with a donation
-              </Link>
-            </div>
+        </div>
+        <div className="card p-5 space-y-3">
+          <h3 className="text-lg font-semibold">Quick links</h3>
+          <p className="text-sm text-white/70">
+            Explore how OneTeenOneTree turns student action into verified impact.
+          </p>
+          <div className="flex flex-col gap-2 text-sm text-white/70">
+            <Link href="/pledge" className="hover:text-white transition">
+              How the pledge works
+            </Link>
+            <Link href="/plant" className="hover:text-white transition">
+              Verification and planting guide
+            </Link>
+            <Link href="/donate" className="hover:text-white transition">
+              Support with a donation
+            </Link>
           </div>
         </div>
       </section>
-    </div>
+    </PageShell>
   )
 }

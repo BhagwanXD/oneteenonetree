@@ -1,5 +1,9 @@
 import CreateClient from './create-client'
 import { buildMetadata } from '@/lib/seo'
+import PageShell from '@/components/site/PageShell'
+import PageHeader from '@/components/site/PageHeader'
+import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
 
 export const metadata = buildMetadata({
   title: 'Create your OneTeenOneTree story card',
@@ -9,5 +13,19 @@ export const metadata = buildMetadata({
 })
 
 export default function CreatePage() {
-  return <CreateClient />
+  return (
+    <PageShell
+      header={
+        <PageHeader
+          title="Create your OneTeenOneTree story card"
+          description="Generate a share-ready story card in seconds."
+          icon={<Icon name="edit" size={22} aria-hidden="true" />}
+        />
+      }
+    >
+      <Reveal>
+        <CreateClient />
+      </Reveal>
+    </PageShell>
+  )
 }

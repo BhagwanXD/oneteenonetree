@@ -8,11 +8,9 @@ import dynamic from 'next/dynamic'
 const Confetti = dynamic(() => import('react-confetti'), { ssr: false })
 
 export default function SuccessClient({
-  firstName,
   totalPledges,
   totalTrees,
 }: {
-  firstName: string | null
   totalPledges: number
   totalTrees: number
 }) {
@@ -58,21 +56,16 @@ export default function SuccessClient({
         />
       )}
 
-      <div className="container max-w-3xl text-center py-16">
-        <h1 className="text-4xl md:text-5xl font-extrabold">
-          🌳 Thank You {firstName ? `${firstName}!` : 'Friend!'}
-        </h1>
-        <p className="text-white/80 mt-4 text-lg">
+      <div className="max-w-3xl mx-auto text-center py-12">
+        <p className="text-white/80 text-lg">
           Your pledge has been recorded. You’ve taken a small step that grows into a lasting impact.
         </p>
 
-        {/* replaced boxes with clean text summary */}
         <p className="mt-3 text-white/60 text-sm">
           So far, <b>{totalPledges.toLocaleString()}</b> pledges have been taken{' '}
           <b>, next up plant {totalTrees.toLocaleString()}</b> trees to create impact 🌍
         </p>
 
-        {/* action buttons */}
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <button
             onClick={copyCaption}
@@ -95,6 +88,14 @@ export default function SuccessClient({
             className="inline-flex items-center gap-2 rounded-xl bg-sky-700 hover:bg-sky-600 text-white px-4 py-2 transition"
           >
             💼 Share on LinkedIn
+          </a>
+          <a
+            href="https://www.youtube.com/@oneteenonetree"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-500 text-white px-4 py-2 transition"
+          >
+            ▶️ Visit YouTube
           </a>
           <Link
             href="/leaderboard"

@@ -1,5 +1,9 @@
 import ForgotPasswordClient from './forgot-password-client'
 import { buildMetadata } from '@/lib/seo'
+import PageShell from '@/components/site/PageShell'
+import PageHeader from '@/components/site/PageHeader'
+import Icon from '@/components/Icon'
+import Reveal from '@/components/Reveal'
 
 export const metadata = buildMetadata({
   title: 'Reset password',
@@ -10,14 +14,20 @@ export const metadata = buildMetadata({
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="container py-12 space-y-6 max-w-2xl">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Forgot password</h1>
-        <p className="text-white/70">
-          Enter your email and we&apos;ll send a reset link.
-        </p>
-      </div>
-      <ForgotPasswordClient />
-    </div>
+    <PageShell
+      header={
+        <PageHeader
+          title="Forgot password"
+          description="Enter your email and we’ll send a reset link."
+          icon={<Icon name="mail" size={22} aria-hidden="true" />}
+        />
+      }
+    >
+      <Reveal>
+        <div className="max-w-2xl mx-auto">
+          <ForgotPasswordClient />
+        </div>
+      </Reveal>
+    </PageShell>
   )
 }
