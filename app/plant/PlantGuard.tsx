@@ -34,7 +34,7 @@ export default function PlantGuard({
     return () => {
       active = false
     }
-  }, [router, supabase])
+  }, [replace, supabase])
 
   if (checking) {
     return (
