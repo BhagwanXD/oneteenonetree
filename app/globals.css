@@ -109,3 +109,10 @@ body {
 .insights-prose a {
   @apply text-emerald-200 underline underline-offset-4;
 }
+
+.insight-editor .ProseMirror {
+  outline: none;
+}
+.insight-editor .ProseMirror:focus {
+  outline: none;
+}

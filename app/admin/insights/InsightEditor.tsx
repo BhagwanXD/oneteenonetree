@@ -231,7 +231,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
   }
 
   return (
-    <div className="space-y-8">
+    <div className="container py-8 space-y-8">
       <header className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">
@@ -387,8 +387,8 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
               </button>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 min-h-[240px]">
-              <EditorContent editor={editor} className="insights-prose" />
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 min-h-[240px] focus-within:border-emerald-400/60 focus-within:ring-2 focus-within:ring-emerald-500/30">
+              <EditorContent editor={editor} className="insights-prose insight-editor" />
             </div>
           </div>
         </div>
