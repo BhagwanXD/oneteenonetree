@@ -7,8 +7,7 @@ import { Suspense } from 'react'
 import ImpactStats, { ImpactStatsSkeleton } from './home/ImpactStats'
 import CampusUnmutedSection, { CampusUnmutedSkeleton } from './home/CampusUnmutedSection'
 
-// Revalidate homepage every 5 minutes
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 export default function Home() {
   return (
     <PageShell
