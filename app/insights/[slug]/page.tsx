@@ -108,11 +108,13 @@ export default async function InsightDetailPage({ params }: PageProps) {
 
   return (
     <PageShell
+      innerClassName="mt-6 space-y-8"
       header={
         <PageHeader
           title={data.title}
           description={data.excerpt || 'An insight from the OneTeenOneTree team.'}
           icon={<Icon name="article" size={22} aria-hidden="true" />}
+          containerClassName="py-8 md:py-10"
         />
       }
     >
