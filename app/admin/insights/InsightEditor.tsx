@@ -124,7 +124,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
   const insertAtCursor = (snippet: string, cursorOffset?: number) => {
     const textarea = contentRef.current
     if (!textarea) {
-      setContentMd((prev) => `${prev}${snippet}`)
+      setContentMd((prev: string) => `${prev}${snippet}`)
       return
     }
     const start = textarea.selectionStart ?? contentMd.length
@@ -149,7 +149,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
   const insertHtmlAtCursor = (snippet: string, cursorOffset?: number) => {
     const textarea = htmlRef.current
     if (!textarea) {
-      setContentHtml((prev) => `${prev}${snippet}`)
+      setContentHtml((prev: string) => `${prev}${snippet}`)
       return
     }
     const start = textarea.selectionStart ?? contentHtml.length
