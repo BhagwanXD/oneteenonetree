@@ -40,7 +40,7 @@ const stripHtml = (value: string) =>
     .replace(/&#39;/g, "'")
     .replace(/&quot;/g, '"')
 
-const renderInline = (nodes?: any[]) => {
+const renderInline = (nodes?: any[]): string => {
   if (!nodes?.length) return ''
   return nodes
     .map((node) => {
@@ -60,7 +60,7 @@ const renderInline = (nodes?: any[]) => {
     .join('')
 }
 
-const renderBlock = (node: any, index = 0) => {
+const renderBlock = (node: any, index = 0): string => {
   if (!node) return ''
   switch (node.type) {
     case 'heading': {
