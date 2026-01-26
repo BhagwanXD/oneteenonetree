@@ -4,10 +4,12 @@ import PageHeader from '@/components/site/PageHeader'
 import Icon from '@/components/Icon'
 import JsonLd from '@/components/seo/JsonLd'
 import { buildMetadata, siteUrl } from '@/lib/seo'
-import { formatInsightDate, renderInsightContent } from '@/lib/insights'
+import { formatInsightDate, sanitizeInsightHtml, tiptapToMarkdown, wrapInsightTables } from '@/lib/insights'
 import ShareBar from './ShareBar'
 import { unstable_cache } from 'next/cache'
 import { createPublicClient } from '@/lib/supabase/public'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -38,7 +40,7 @@ const getInsightBySlug = (slug: string) =>
       const { data } = await supabase
         .from('insights')
         .select(
-          'id,title,slug,excerpt,content,cover_image_url,author_name,tags,meta_title,meta_description,published_at,created_at'
+          'id,title,slug,excerpt,content,content_md,content_html,content_format,cover_image_url,author_name,tags,meta_title,meta_description,published_at,created_at'
         )
         .eq('slug', slug)
         .eq('status', 'published')
@@ -80,7 +82,17 @@ export default async function InsightDetailPage({ params }: PageProps) {
   if (!data) notFound()
 
   const dateLabel = formatInsightDate(data.published_at || data.created_at)
-  const contentHtml = renderInsightContent(data.content)
+  const contentFormat = data.content_format || (data.content_html ? 'html' : 'md')
+  const htmlBody =
+    contentFormat === 'html' && data.content_html
+      ? wrapInsightTables(sanitizeInsightHtml(data.content_html))
+      : ''
+  const markdownBody =
+    contentFormat !== 'html'
+      ? (typeof data.content_md === 'string' && data.content_md.trim()) ||
+        tiptapToMarkdown(data.content) ||
+        ''
+      : ''
   const pageUrl = `${siteUrl}/insights/${data.slug}`
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -151,11 +163,23 @@ export default async function InsightDetailPage({ params }: PageProps) {
           </div>
         ) : null}
 
-        {contentHtml ? (
-          <div
-            className="insights-prose"
-            dangerouslySetInnerHTML={{ __html: contentHtml }}
-          />
+        {htmlBody ? (
+          <div className="insights-prose" dangerouslySetInnerHTML={{ __html: htmlBody }} />
+        ) : markdownBody ? (
+          <div className="insights-prose">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                table: ({ ...props }) => (
+                  <div className="table-wrap">
+                    <table {...props} />
+                  </div>
+                ),
+              }}
+            >
+              {markdownBody}
+            </ReactMarkdown>
+          </div>
         ) : (
           <p className="text-white/70">
             This insight is being updated. Please check back soon.

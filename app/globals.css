@@ -103,11 +103,47 @@ body {
 .insights-prose ol {
   @apply list-decimal pl-6 space-y-2;
 }
+.insights-prose hr {
+  @apply border-white/10 my-8;
+}
 .insights-prose blockquote {
   @apply border-l-2 border-emerald-400/40 pl-4 text-white/70 italic;
 }
 .insights-prose a {
   @apply text-emerald-200 underline underline-offset-4;
+}
+.insights-prose strong {
+  @apply text-white;
+}
+.insights-prose code {
+  @apply rounded-md bg-white/10 px-2 py-0.5 text-[0.95em];
+}
+.insights-prose table {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+.insights-prose .table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+.insights-prose .table-wrap table {
+  width: 100%;
+}
+.insights-prose th,
+.insights-prose td {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  vertical-align: top;
+}
+.insights-prose thead {
+  background: rgba(255, 255, 255, 0.04);
+}
+.insights-prose tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .insight-editor .ProseMirror {
