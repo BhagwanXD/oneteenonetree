@@ -30,17 +30,34 @@ export const normalizeInsightContent = (value: Insight['content']) => {
     const trimmed = value.trim()
     if (!trimmed) return defaultDoc
     try {
-      const parsed = JSON.parse(trimmed)
+      let parsed: unknown = JSON.parse(trimmed)
+      if (typeof parsed === 'string') {
+        parsed = JSON.parse(parsed)
+      }
       if (parsed && typeof parsed === 'object') {
         return parsed as Record<string, unknown>
       }
     } catch {}
-    return defaultDoc
+    return {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: trimmed }],
+        },
+      ],
+    }
   }
   return value
 }
 
 export const renderInsightContent = (value: Insight['content']) => {
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (trimmed.startsWith('<') && trimmed.endsWith('>')) {
+      return trimmed
+    }
+  }
   const doc = normalizeInsightContent(value)
   return generateHTML(doc, [StarterKit, Link])
 }
