@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   const payload = await req.json().catch(() => ({}))
   const tags = Array.isArray(payload.tags) ? payload.tags.filter(Boolean) : []
 
-  tags.forEach((tag) => revalidateTag(tag))
+  tags.forEach((tag: string) => revalidateTag(tag))
 
   return NextResponse.json({ ok: true, revalidated: tags })
 }
