@@ -15,37 +15,39 @@ type PageProps = {
 
 export const revalidate = 300
 
-const getInsightMeta = unstable_cache(
-  async (slug: string) => {
-    const supabase = createPublicClient()
-    const { data } = await supabase
-      .from('insights')
-      .select('title,slug,excerpt,meta_title,meta_description,cover_image_url')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .maybeSingle()
-    return data
-  },
-  ['insight-meta'],
-  { revalidate: 300 }
-)
+const getInsightMeta = (slug: string) =>
+  unstable_cache(
+    async () => {
+      const supabase = createPublicClient()
+      const { data } = await supabase
+        .from('insights')
+        .select('title,slug,excerpt,meta_title,meta_description,cover_image_url')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .maybeSingle()
+      return data
+    },
+    ['insight-meta', slug],
+    { revalidate: 300 }
+  )()
 
-const getInsightBySlug = unstable_cache(
-  async (slug: string) => {
-    const supabase = createPublicClient()
-    const { data } = await supabase
-      .from('insights')
-      .select(
-        'id,title,slug,excerpt,content,cover_image_url,author_name,tags,meta_title,meta_description,published_at,created_at'
-      )
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .maybeSingle()
-    return data
-  },
-  ['insight-detail'],
-  { revalidate: 300 }
-)
+const getInsightBySlug = (slug: string) =>
+  unstable_cache(
+    async () => {
+      const supabase = createPublicClient()
+      const { data } = await supabase
+        .from('insights')
+        .select(
+          'id,title,slug,excerpt,content,cover_image_url,author_name,tags,meta_title,meta_description,published_at,created_at'
+        )
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .maybeSingle()
+      return data
+    },
+    ['insight-detail', slug],
+    { revalidate: 300 }
+  )()
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
@@ -116,7 +118,7 @@ export default async function InsightDetailPage({ params }: PageProps) {
     >
       <JsonLd data={jsonLd} id={`insight-jsonld-${data.id}`} />
 
-      <section className="max-w-3xl mx-auto space-y-6">
+      <article className="max-w-3xl mx-auto space-y-6">
         <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-white/60">
           <span>{dateLabel}</span>
           {data.author_name ? <span>• {data.author_name}</span> : null}
@@ -147,10 +149,26 @@ export default async function InsightDetailPage({ params }: PageProps) {
           </div>
         ) : null}
 
-        <div
-          className="insights-prose"
-          dangerouslySetInnerHTML={{ __html: contentHtml }}
-        />
+        {contentHtml ? (
+          <div
+            className="insights-prose"
+            dangerouslySetInnerHTML={{ __html: contentHtml }}
+          />
+        ) : (
+          <p className="text-white/70">
+            This insight is being updated. Please check back soon.
+          </p>
+        )}
+      </article>
+
+      <section className="max-w-4xl mx-auto text-center space-y-4">
+        <h2 className="text-2xl md:text-3xl font-semibold">More insights</h2>
+        <p className="text-white/70">
+          Explore more field notes and student-led climate action updates.
+        </p>
+        <a href="/insights" className="btn inline-flex justify-center">
+          Back to all insights
+        </a>
       </section>
     </PageShell>
   )
