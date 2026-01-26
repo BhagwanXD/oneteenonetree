@@ -41,7 +41,7 @@ const getInsights = unstable_cache(
     return (data ?? []) as InsightCard[]
   },
   ['insights-list'],
-  { revalidate: 300 }
+  { revalidate: 300, tags: ['insights'] }
 )
 
 export default async function InsightsPage() {

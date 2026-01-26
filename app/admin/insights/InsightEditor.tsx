@@ -71,6 +71,18 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
   const contentRef = useRef<HTMLTextAreaElement | null>(null)
   const htmlRef = useRef<HTMLTextAreaElement | null>(null)
 
+  const triggerRevalidate = async (slugValue: string) => {
+    try {
+      await fetch('/api/admin/revalidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tags: ['insights', `insight-${slugValue}`] }),
+      })
+    } catch {
+      // Best effort cache refresh.
+    }
+  }
+
   useEffect(() => {
     if (!slugTouched) {
       setSlug(slugify(title))
@@ -267,6 +279,10 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
       setStatus(nextStatus)
       setNotice(nextStatus === 'published' ? 'Insight published.' : 'Draft saved.')
       router.refresh()
+      if (nextStatus === 'published') {
+        const nextSlug = payload.slug || slug
+        if (nextSlug) triggerRevalidate(nextSlug)
+      }
     }
     setSaving(false)
   }
@@ -284,6 +300,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
       setStatus('draft')
       setNotice('Insight moved back to draft.')
       router.refresh()
+      if (slug) triggerRevalidate(slug)
     }
     setSaving(false)
   }
@@ -298,6 +315,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
       setSaving(false)
       return
     }
+    if (slug) triggerRevalidate(slug)
     push('/admin/insights')
   }
 

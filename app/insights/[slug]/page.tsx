@@ -30,7 +30,7 @@ const getInsightMeta = (slug: string) =>
       return data
     },
     ['insight-meta', slug],
-    { revalidate: 300 }
+    { revalidate: 300, tags: ['insights', `insight-${slug}`] }
   )()
 
 const getInsightBySlug = (slug: string) =>
@@ -48,7 +48,7 @@ const getInsightBySlug = (slug: string) =>
       return data
     },
     ['insight-detail', slug],
-    { revalidate: 300 }
+    { revalidate: 300, tags: ['insights', `insight-${slug}`] }
   )()
 
 export async function generateMetadata({ params }: PageProps) {
