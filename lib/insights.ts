@@ -25,7 +25,18 @@ const defaultDoc = {
 }
 
 export const normalizeInsightContent = (value: Insight['content']) => {
-  if (!value || typeof value === 'string') return defaultDoc
+  if (!value) return defaultDoc
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed) return defaultDoc
+    try {
+      const parsed = JSON.parse(trimmed)
+      if (parsed && typeof parsed === 'object') {
+        return parsed as Record<string, unknown>
+      }
+    } catch {}
+    return defaultDoc
+  }
   return value
 }
 
