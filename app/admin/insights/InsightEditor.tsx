@@ -50,6 +50,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
   const [contentHtml, setContentHtml] = useState(initialInsight?.content_html ?? '')
   const [htmlPreview, setHtmlPreview] = useState('')
   const [htmlWarning, setHtmlWarning] = useState('')
+  const [formatWarning, setFormatWarning] = useState('')
   const [coverImageUrl, setCoverImageUrl] = useState(initialInsight?.cover_image_url ?? '')
   const [status, setStatus] = useState<Insight['status']>(
     (initialInsight?.status as Insight['status']) ?? 'draft'
@@ -171,14 +172,19 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
     insertHtmlAtCursor(html || plain)
   }
 
-  const handleSanitizePreview = () => {
+  const getSanitizedHtml = () => {
     const cleaned = sanitizeInsightHtml(contentHtml)
-    setHtmlPreview(wrapInsightTables(cleaned))
     if (contentHtml.trim() && !cleaned.trim()) {
       setHtmlWarning('Your HTML contained unsupported tags. Please use allowed tags only.')
     } else {
       setHtmlWarning('')
     }
+    return cleaned
+  }
+
+  const handleSanitizePreview = () => {
+    const cleaned = getSanitizedHtml()
+    setHtmlPreview(wrapInsightTables(cleaned))
   }
 
   const insertLink = () => {
@@ -194,7 +200,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
 
     const now = new Date().toISOString()
     const nextFormat = contentFormat ?? 'md'
-    const cleanedHtml = nextFormat === 'html' ? sanitizeInsightHtml(contentHtml) : null
+    const cleanedHtml = nextFormat === 'html' ? getSanitizedHtml() : null
     return {
       title: title.trim(),
       slug: slug.trim(),
@@ -228,11 +234,13 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
       return
     }
     if (contentFormat === 'html') {
-      const cleaned = sanitizeInsightHtml(contentHtml)
+      const cleaned = getSanitizedHtml()
       if (!cleaned.trim()) {
         setNotice('Your HTML contained unsupported tags. Please use allowed tags only.')
         return
       }
+      setContentHtml(cleaned)
+      setHtmlPreview(wrapInsightTables(cleaned))
     } else if (!contentMd.trim()) {
       setNotice('Content cannot be empty.')
       return
@@ -472,7 +480,21 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
                 <span>Content format</span>
                 <select
                   value={contentFormat ?? 'md'}
-                  onChange={(event) => setContentFormat(event.target.value as 'md' | 'html')}
+                  onChange={(event) => {
+                    const next = event.target.value as 'md' | 'html'
+                    const switchingToHtml = next === 'html'
+                    const switchingToMd = next === 'md'
+                    const hasMd = contentMd.trim().length > 0
+                    const hasHtml = contentHtml.trim().length > 0
+                    if ((switchingToHtml && hasMd) || (switchingToMd && hasHtml)) {
+                      setFormatWarning(
+                        'Switching formats does not convert content. Saving will use only the selected format.'
+                      )
+                    } else {
+                      setFormatWarning('')
+                    }
+                    setContentFormat(next)
+                  }}
                   className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-white/70 focus:border-emerald-300/60 focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="md">Markdown</option>
@@ -480,6 +502,9 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
                 </select>
               </div>
             </div>
+            {formatWarning ? (
+              <p className="text-xs text-amber-200">{formatWarning}</p>
+            ) : null}
 
             {contentFormat === 'html' ? (
               <>
