@@ -157,7 +157,7 @@ async function RelatedInsights({
               </p>
               {insight.tags?.length ? (
                 <div className="flex flex-wrap gap-2">
-                  {insight.tags.slice(0, 3).map((tag) => (
+                  {insight.tags.slice(0, 3).map((tag: string) => (
                     <span
                       key={tag}
                       className="text-xs uppercase tracking-wider rounded-full border border-white/10 px-3 py-1 text-white/60"
