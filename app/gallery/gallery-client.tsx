@@ -6,7 +6,8 @@ import Reveal from '@/components/Reveal'
 
 type GalleryItem = {
   id: string
-  image_url: string
+  media_url: string
+  media_type?: 'image' | 'video' | null
   caption: string | null
   city: string | null
   year: number | null
@@ -22,7 +23,7 @@ const PAGE_SIZE = 12
 const getAltText = (item: GalleryItem) => {
   if (item.caption) return item.caption
   const bits = [item.city, item.year, item.drive_type].filter(Boolean).join(' ')
-  return bits ? `${bits} photo` : 'OneTeenOneTree gallery photo'
+  return bits ? `${bits} media` : 'OneTeenOneTree gallery media'
 }
 
 const formatMeta = (item: GalleryItem) => {
@@ -51,9 +52,9 @@ export default function GalleryClient({
               <div className="mx-auto h-12 w-12 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-white/70">
                 <Icon name="info" size={20} aria-hidden="true" />
               </div>
-              <h2 className="text-xl font-semibold">No photos yet.</h2>
+              <h2 className="text-xl font-semibold">No media yet.</h2>
               <p className="text-white/70">
-                We&apos;ll add drive photos soon. Check back for updates.
+                We&apos;ll add drive photos and videos soon. Check back for updates.
               </p>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -78,25 +79,34 @@ export default function GalleryClient({
                     key={item.id}
                     className="card p-0 overflow-hidden transition hover:-translate-y-1 hover:border-white/20"
                   >
-                    {item.image_url ? (
+                    {item.media_url ? (
                       <a
-                        href={item.image_url}
+                        href={item.media_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block bg-black/20"
                       >
                         <div className="aspect-[4/3] overflow-hidden">
-                          <img
-                            src={item.image_url}
-                            alt={getAltText(item)}
-                            className="h-full w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
-                            loading="lazy"
-                          />
+                          {item.media_type === 'video' ? (
+                            <video
+                              src={item.media_url}
+                              className="h-full w-full object-cover"
+                              controls
+                              preload="metadata"
+                            />
+                          ) : (
+                            <img
+                              src={item.media_url}
+                              alt={getAltText(item)}
+                              className="h-full w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+                              loading="lazy"
+                            />
+                          )}
                         </div>
                       </a>
                     ) : (
                       <div className="aspect-[4/3] flex items-center justify-center text-sm text-white/60 bg-black/20">
-                        Photo coming soon
+                        Media coming soon
                       </div>
                     )}
                     <div className="p-4 space-y-2">

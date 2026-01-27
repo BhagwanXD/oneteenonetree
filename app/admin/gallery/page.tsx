@@ -12,6 +12,7 @@ export const metadata = {
 type GalleryRow = {
   id: string
   image_path: string
+  media_type?: 'image' | 'video' | null
   caption: string | null
   city: string | null
   year: number | null
@@ -36,7 +37,7 @@ export default async function AdminGalleryPage() {
   const { data } = await supabase
     .from('gallery_items')
     .select(
-      'id, image_path, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
+      'id, image_path, media_type, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
     )
     .order('created_at', { ascending: false })
 

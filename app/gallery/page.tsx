@@ -10,7 +10,7 @@ import { createPublicClient } from '@/lib/supabase/public'
 export const metadata = buildMetadata({
   title: 'Gallery',
   description:
-    'Browse verified OneTeenOneTree plantation drives across cities, student-led events, and community impact photos.',
+    'Browse verified OneTeenOneTree plantation drives across cities, student-led events, and community impact photos and videos.',
   path: '/gallery',
 })
 
@@ -19,6 +19,7 @@ export const revalidate = 300
 type GalleryRow = {
   id: string
   image_path: string
+  media_type?: 'image' | 'video' | null
   caption: string | null
   city: string | null
   year: number | null
@@ -29,12 +30,12 @@ type GalleryRow = {
   created_at: string
 }
 
-const resolveImageUrl = (supabase: any, imagePath: string) => {
-  if (!imagePath) return ''
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath
+const resolveMediaUrl = (supabase: any, mediaPath: string) => {
+  if (!mediaPath) return ''
+  if (mediaPath.startsWith('http://') || mediaPath.startsWith('https://')) {
+    return mediaPath
   }
-  const { data } = supabase.storage.from('gallery').getPublicUrl(imagePath)
+  const { data } = supabase.storage.from('gallery').getPublicUrl(mediaPath)
   return data?.publicUrl ?? ''
 }
 
@@ -44,7 +45,7 @@ const getGalleryItems = unstable_cache(
     const { data } = await supabase
       .from('gallery_items')
       .select(
-        'id, image_path, caption, city, year, drive_type, tags, sort_order, taken_at, created_at'
+        'id, image_path, media_type, caption, city, year, drive_type, tags, sort_order, taken_at, created_at'
       )
       .eq('is_published', true)
       .order('sort_order', { ascending: true })
@@ -52,7 +53,8 @@ const getGalleryItems = unstable_cache(
 
     const items = (data ?? []).map((row: GalleryRow) => ({
       ...row,
-      image_url: resolveImageUrl(supabase, row.image_path),
+      media_type: row.media_type ?? 'image',
+      media_url: resolveMediaUrl(supabase, row.image_path),
     }))
 
     return items

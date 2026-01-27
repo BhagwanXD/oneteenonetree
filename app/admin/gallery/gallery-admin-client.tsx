@@ -8,6 +8,7 @@ import Icon from '@/components/Icon'
 type GalleryItem = {
   id: string
   image_path: string
+  media_type?: 'image' | 'video' | null
   caption: string | null
   city: string | null
   year: number | null
@@ -29,12 +30,12 @@ const driveTypeOptions = [
   'Other',
 ]
 
-const resolveImageUrl = (supabase: any, imagePath: string) => {
-  if (!imagePath) return ''
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath
+const resolveMediaUrl = (supabase: any, mediaPath: string) => {
+  if (!mediaPath) return ''
+  if (mediaPath.startsWith('http://') || mediaPath.startsWith('https://')) {
+    return mediaPath
   }
-  const { data } = supabase.storage.from('gallery').getPublicUrl(imagePath)
+  const { data } = supabase.storage.from('gallery').getPublicUrl(mediaPath)
   return data?.publicUrl ?? ''
 }
 
@@ -119,7 +120,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     setNotice('')
     setUploadErrors([])
     if (selectedFiles.length === 0) {
-      setNotice('Select at least one image to upload.')
+      setNotice('Select at least one file to upload.')
       return
     }
     if (defaults.year && Number.isNaN(Number.parseInt(defaults.year, 10))) {
@@ -143,13 +144,16 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
       const file = selectedFiles[index]
       setUploadProgress({ current: index + 1, total: selectedFiles.length })
 
-      if (!file.type.startsWith('image/')) {
+      const isImage = file.type.startsWith('image/')
+      const isVideo = file.type.startsWith('video/')
+      if (!isImage && !isVideo) {
         failures.push({ name: file.name, reason: 'Unsupported file type.' })
         continue
       }
 
       const ext = file.name.split('.').pop() || 'jpg'
       const safeExt = ext.length > 5 ? 'jpg' : ext
+      const mediaType: GalleryItem['media_type'] = isVideo ? 'video' : 'image'
       const yearSegment = new Date().getFullYear()
       const path = `gallery/${yearSegment}/${crypto.randomUUID()}.${safeExt}`
 
@@ -167,6 +171,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
       const sortOrder = defaults.sortOrder ? Number.parseInt(defaults.sortOrder, 10) : 0
       const insertPayload = {
         image_path: path,
+        media_type: mediaType,
         caption,
         city: defaults.city.trim() || null,
         year,
@@ -181,7 +186,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
         .from('gallery_items')
         .insert(insertPayload)
         .select(
-          'id, image_path, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
+          'id, image_path, media_type, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
         )
         .single()
 
@@ -202,9 +207,9 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     setFileCaptions([])
     if (fileInputRef.current) fileInputRef.current.value = ''
     if (uploaded.length > 0) {
-      setNotice(`Uploaded ${uploaded.length} photo${uploaded.length === 1 ? '' : 's'}.`)
+      setNotice(`Uploaded ${uploaded.length} file${uploaded.length === 1 ? '' : 's'}.`)
     } else if (failures.length > 0) {
-      setNotice('No photos uploaded. Please review the errors.')
+      setNotice('No files uploaded. Please review the errors.')
     }
   }
 
@@ -224,7 +229,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
       })
       .eq('id', item.id)
       .select(
-        'id, image_path, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
+        'id, image_path, media_type, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
       )
       .single()
 
@@ -319,6 +324,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
 
       const insertPayload = {
         image_path: imagePath,
+        media_type: 'image' as const,
         caption: row.caption.trim() || null,
         city: row.city.trim() || null,
         year,
@@ -333,7 +339,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
         .from('gallery_items')
         .insert(insertPayload)
         .select(
-          'id, image_path, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
+          'id, image_path, media_type, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
         )
         .single()
 
@@ -354,10 +360,10 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     setCsvPreview(null)
   }
 
-  const imageUrls = useMemo(() => {
+  const mediaUrls = useMemo(() => {
     const map = new Map<string, string>()
     items.forEach((item) => {
-      map.set(item.id, resolveImageUrl(supabase, item.image_path))
+      map.set(item.id, resolveMediaUrl(supabase, item.image_path))
     })
     return map
   }, [items, supabase])
@@ -367,7 +373,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
       <div className="space-y-2">
         <h1 className="text-2xl font-bold">Admin — Gallery Manager</h1>
         <p className="text-white/60 text-sm">
-          Upload gallery photos and manage public visibility.
+          Upload gallery photos or videos and manage public visibility.
         </p>
       </div>
 
@@ -380,7 +386,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
       <div className="card space-y-4">
         <div className="flex items-center gap-3 text-lg font-semibold">
           <Icon name="upload" size={18} aria-hidden="true" />
-          Upload photos
+          Upload media
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2 text-sm text-white/70">
@@ -463,11 +469,11 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
         </div>
 
         <label className="space-y-2 text-sm text-white/70">
-          Select images (single or multiple)
+          Select media files (images or videos)
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             multiple
             onChange={handleFileChange}
             className="block w-full text-sm text-white/70 file:mr-4 file:rounded-xl file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:text-white"
@@ -506,7 +512,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
         <button type="button" onClick={handleUpload} disabled={uploading} className="btn">
           {uploading
             ? `Uploading ${uploadProgress.current}/${uploadProgress.total}...`
-            : 'Upload photos'}
+            : 'Upload media'}
         </button>
 
         {uploadErrors.length > 0 ? (
@@ -592,19 +598,28 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Gallery items</h2>
         {items.length === 0 ? (
-          <div className="card">No gallery photos yet.</div>
+          <div className="card">No gallery media yet.</div>
         ) : (
           <div className="space-y-4">
             {items.map((item) => (
               <div key={item.id} className="card space-y-4">
                 <div className="grid gap-4 md:grid-cols-[160px_1fr]">
                   <div className="h-32 w-full overflow-hidden rounded-xl bg-black/20">
-                    {imageUrls.get(item.id) ? (
-                      <img
-                        src={imageUrls.get(item.id)}
-                        alt={item.caption || 'Gallery photo'}
-                        className="h-full w-full object-cover"
-                      />
+                    {mediaUrls.get(item.id) ? (
+                      item.media_type === 'video' ? (
+                        <video
+                          src={mediaUrls.get(item.id)}
+                          className="h-full w-full object-cover"
+                          controls
+                          preload="metadata"
+                        />
+                      ) : (
+                        <img
+                          src={mediaUrls.get(item.id)}
+                          alt={item.caption || 'Gallery media'}
+                          className="h-full w-full object-cover"
+                        />
+                      )
                     ) : (
                       <div className="flex h-full items-center justify-center text-xs text-white/60">
                         No preview
