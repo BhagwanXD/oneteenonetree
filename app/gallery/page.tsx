@@ -62,7 +62,7 @@ const getGalleryItems = unstable_cache(
     return items
   },
   ['gallery-items'],
-  { revalidate: 300 }
+  { revalidate: 300, tags: ['gallery'] }
 )
 
 export default async function GalleryPage() {

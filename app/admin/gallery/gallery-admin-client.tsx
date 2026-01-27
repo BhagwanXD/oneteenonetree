@@ -80,6 +80,18 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
   } | null>(null)
   const [csvPublishedDefault, setCsvPublishedDefault] = useState(true)
 
+  const triggerGalleryRevalidate = async () => {
+    try {
+      await fetch('/api/admin/revalidate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tags: ['gallery'] }),
+      })
+    } catch {
+      // Best effort cache refresh.
+    }
+  }
+
   useEffect(() => {
     if (!csvContent.trim()) {
       setCsvPreview(null)
@@ -211,6 +223,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     if (fileInputRef.current) fileInputRef.current.value = ''
     if (uploaded.length > 0) {
       setNotice(`Uploaded ${uploaded.length} file${uploaded.length === 1 ? '' : 's'}.`)
+      triggerGalleryRevalidate()
     } else if (failures.length > 0) {
       setNotice('No files uploaded. Please review the errors.')
     }
@@ -245,6 +258,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     if (data) {
       setItems((prev) => prev.map((row) => (row.id === item.id ? (data as GalleryItem) : row)))
       setNotice('Gallery item updated.')
+      triggerGalleryRevalidate()
     }
   }
 
@@ -263,6 +277,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     }
     setItems((prev) => prev.filter((row) => row.id !== item.id))
     setNotice('Media item deleted.')
+    triggerGalleryRevalidate()
   }
 
   const handleCsvFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -363,6 +378,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     })
     setCsvContent('')
     setCsvPreview(null)
+    if (inserted.length > 0) triggerGalleryRevalidate()
   }
 
   const mediaUrls = useMemo(() => {
