@@ -432,6 +432,13 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
                   <>
                     <button
                       type="button"
+                      onClick={() => insertAtCursor('\n# Heading\n')}
+                      className="rounded-lg border border-white/10 px-3 py-1 text-xs text-white/70 hover:text-white hover:bg-white/10 transition"
+                    >
+                      H1
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => insertAtCursor('\n## Heading\n')}
                       className="rounded-lg border border-white/10 px-3 py-1 text-xs text-white/70 hover:text-white hover:bg-white/10 transition"
                     >
@@ -443,6 +450,13 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
                       className="rounded-lg border border-white/10 px-3 py-1 text-xs text-white/70 hover:text-white hover:bg-white/10 transition"
                     >
                       H3
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertAtCursor('\n> Quote text\n')}
+                      className="rounded-lg border border-white/10 px-3 py-1 text-xs text-white/70 hover:text-white hover:bg-white/10 transition"
+                    >
+                      Quote
                     </button>
                     <button
                       type="button"
@@ -464,6 +478,13 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
                       className="rounded-lg border border-white/10 px-3 py-1 text-xs text-white/70 hover:text-white hover:bg-white/10 transition"
                     >
                       Divider
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertAtCursor('\n```\ncode here\n```\n')}
+                      className="rounded-lg border border-white/10 px-3 py-1 text-xs text-white/70 hover:text-white hover:bg-white/10 transition"
+                    >
+                      Code
                     </button>
                     <button
                       type="button"
