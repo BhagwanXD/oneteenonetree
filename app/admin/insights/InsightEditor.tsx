@@ -383,11 +383,13 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
         type: 'pillar',
         action_path: null,
       },
-      ...clusterTargets.map((item) => ({
+      ...clusterTargets.map(
+        (item): EdgeInsert => ({
         to_insight_id: item.id ?? null,
         type: 'cluster',
         action_path: null,
-      })),
+      })
+      ),
       {
         to_insight_id: null,
         type: 'action',
