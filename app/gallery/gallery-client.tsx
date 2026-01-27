@@ -95,6 +95,13 @@ export default function GalleryClient({
                               muted={item.video_muted ?? true}
                               controls
                               preload="metadata"
+                              playsInline
+                              onVolumeChange={(event) => {
+                                if (item.video_muted ?? true) {
+                                  event.currentTarget.muted = true
+                                  event.currentTarget.volume = 0
+                                }
+                              }}
                             />
                           ) : (
                             <img

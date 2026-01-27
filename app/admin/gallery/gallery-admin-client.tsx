@@ -499,7 +499,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
               }
               className="h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--acc)] focus:ring-[var(--acc)]"
             />
-            Mute videos by default
+            Force mute videos (viewers can&apos;t unmute)
           </label>
         </div>
 
@@ -757,7 +757,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
                         disabled={item.media_type !== 'video'}
                         className="h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--acc)] focus:ring-[var(--acc)] disabled:opacity-40"
                       />
-                      Mute video
+                      Force mute (no unmute)
                     </label>
                   </div>
                 </div>
