@@ -71,7 +71,7 @@ const getRelatedInsights = (
       const tagSet = new Set(tags ?? [])
       return data
         .map((item) => {
-          const overlap = (item.tags ?? []).filter((tag) => tagSet.has(tag)).length
+          const overlap = (item.tags ?? []).filter((tag: string) => tagSet.has(tag)).length
           return { ...item, overlap }
         })
         .sort((a, b) => {
