@@ -9,6 +9,7 @@ export type Insight = {
   content_md?: string | null
   content_html?: string | null
   content_format?: 'md' | 'html'
+  category?: string | null
   cover_image_url: string | null
   status: 'draft' | 'published'
   author_name: string | null
@@ -107,6 +108,7 @@ export const sanitizeInsightHtml = (value: string) =>
       'em',
       'b',
       'i',
+      'h1',
       'h2',
       'h3',
       'h4',

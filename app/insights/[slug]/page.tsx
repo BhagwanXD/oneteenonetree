@@ -40,7 +40,7 @@ const getInsightBySlug = (slug: string) =>
       const { data } = await supabase
         .from('insights')
         .select(
-          'id,title,slug,excerpt,content,content_md,content_html,content_format,cover_image_url,author_name,tags,meta_title,meta_description,published_at,created_at'
+          'id,title,slug,excerpt,content,content_md,content_html,content_format,cover_image_url,author_name,tags,category,meta_title,meta_description,published_at,created_at'
         )
         .eq('slug', slug)
         .eq('status', 'published')
@@ -50,6 +50,138 @@ const getInsightBySlug = (slug: string) =>
     ['insight-detail', slug],
     { revalidate: 300, tags: ['insights', `insight-${slug}`] }
   )()
+
+const getRelatedInsights = (
+  category: string,
+  currentSlug: string,
+  tags: string[]
+) =>
+  unstable_cache(
+    async () => {
+      const supabase = createPublicClient()
+      const { data } = await supabase
+        .from('insights')
+        .select('id,title,slug,excerpt,cover_image_url,tags,author_name,published_at,created_at')
+        .eq('status', 'published')
+        .eq('category', category)
+        .neq('slug', currentSlug)
+        .limit(12)
+
+      if (!data) return []
+      const tagSet = new Set(tags ?? [])
+      return data
+        .map((item) => {
+          const overlap = (item.tags ?? []).filter((tag) => tagSet.has(tag)).length
+          return { ...item, overlap }
+        })
+        .sort((a, b) => {
+          if (b.overlap !== a.overlap) return b.overlap - a.overlap
+          const dateA = new Date(a.published_at || a.created_at).getTime()
+          const dateB = new Date(b.published_at || b.created_at).getTime()
+          return dateB - dateA
+        })
+        .slice(0, 6)
+    },
+    ['related-insights', category, currentSlug],
+    { revalidate: 300, tags: ['insights', `insight-${currentSlug}`] }
+  )()
+
+async function RelatedInsights({
+  currentSlug,
+  category,
+  tags,
+}: {
+  currentSlug: string
+  category: string | null
+  tags: string[]
+}) {
+  if (!category) {
+    return (
+      <section className="max-w-4xl mx-auto text-center space-y-4">
+        <h2 className="text-2xl md:text-3xl font-semibold">More insights</h2>
+        <p className="text-white/70">
+          Explore more field notes and student-led climate action updates.
+        </p>
+        <a href="/insights" className="btn inline-flex justify-center">
+          Back to all insights
+        </a>
+      </section>
+    )
+  }
+
+  const related = await getRelatedInsights(category, currentSlug, tags)
+
+  if (!related.length) {
+    return (
+      <section className="max-w-4xl mx-auto text-center space-y-4">
+        <h2 className="text-2xl md:text-3xl font-semibold">More insights</h2>
+        <p className="text-white/70">
+          Explore more field notes and student-led climate action updates.
+        </p>
+        <a href="/insights" className="btn inline-flex justify-center">
+          Back to all insights
+        </a>
+      </section>
+    )
+  }
+
+  return (
+    <section className="space-y-6">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl md:text-3xl font-semibold">Related insights</h2>
+        <p className="text-white/70">
+          Keep reading more insights in this category.
+        </p>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {related.map((insight) => (
+          <article key={insight.id} className="card flex flex-col">
+            {insight.cover_image_url ? (
+              <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 mb-4">
+                <img
+                  src={insight.cover_image_url}
+                  alt={`Cover for ${insight.title}`}
+                  className="h-44 w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ) : null}
+            <div className="space-y-3 flex-1">
+              <div className="text-xs text-white/50">
+                {formatInsightDate(insight.published_at || insight.created_at)}
+                {insight.author_name ? ` • ${insight.author_name}` : ''}
+              </div>
+              <h3 className="text-lg font-semibold">{insight.title}</h3>
+              <p className="text-sm text-white/70">
+                {insight.excerpt || 'Read the latest insight from the OneTeenOneTree team.'}
+              </p>
+              {insight.tags?.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {insight.tags.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-xs uppercase tracking-wider rounded-full border border-white/10 px-3 py-1 text-white/60"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            <a href={`/insights/${insight.slug}`} className="btn mt-4 justify-center">
+              Read insight
+            </a>
+          </article>
+        ))}
+      </div>
+      <div className="text-center">
+        <a href="/insights" className="btn inline-flex justify-center">
+          Back to all insights
+        </a>
+      </div>
+    </section>
+  )
+}
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
@@ -96,7 +228,7 @@ export default async function InsightDetailPage({ params }: PageProps) {
   const pageUrl = `${siteUrl}/insights/${data.slug}`
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+      '@type': 'BlogPosting',
     headline: data.title,
     datePublished: data.published_at || data.created_at,
     dateModified: data.published_at || data.created_at,
@@ -187,15 +319,7 @@ export default async function InsightDetailPage({ params }: PageProps) {
         )}
       </article>
 
-      <section className="max-w-4xl mx-auto text-center space-y-4">
-        <h2 className="text-2xl md:text-3xl font-semibold">More insights</h2>
-        <p className="text-white/70">
-          Explore more field notes and student-led climate action updates.
-        </p>
-        <a href="/insights" className="btn inline-flex justify-center">
-          Back to all insights
-        </a>
-      </section>
+      <RelatedInsights currentSlug={data.slug} category={data.category ?? null} tags={data.tags ?? []} />
     </PageShell>
   )
 }

@@ -30,6 +30,26 @@ const formatDateTime = (value?: string | null) => {
   })
 }
 
+type LinkMapRow = {
+  category: string
+  pillar_slug: string
+  cluster_slugs: string[] | null
+  action_type: string
+  anchor_variants?: Record<string, any> | null
+}
+
+type LinkTarget = {
+  slug: string
+  title: string
+  id?: string | null
+}
+
+type EdgeInsert = {
+  to_insight_id: string | null
+  type: 'pillar' | 'cluster' | 'action'
+  action_path?: string | null
+}
+
 export default function InsightEditor({ initialInsight, defaultAuthorName }: InsightEditorProps) {
   const router = useRouter()
   const { push, replace } = useNavigateWithLoader()
@@ -38,6 +58,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
   const [slug, setSlug] = useState(initialInsight?.slug ?? '')
   const [slugTouched, setSlugTouched] = useState(Boolean(initialInsight?.slug))
   const [excerpt, setExcerpt] = useState(initialInsight?.excerpt ?? '')
+  const [category, setCategory] = useState(initialInsight?.category ?? '')
   const [contentFormat, setContentFormat] = useState<Insight['content_format']>(
     initialInsight?.content_format ?? (initialInsight?.content_html ? 'html' : 'md')
   )
@@ -70,6 +91,35 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
 
   const contentRef = useRef<HTMLTextAreaElement | null>(null)
   const htmlRef = useRef<HTMLTextAreaElement | null>(null)
+
+  const normalizeSlugTitle = (value: string) =>
+    value
+      .replace(/[-_]+/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+      .trim()
+
+  const getActionPath = (value: string) => {
+    if (value.startsWith('/')) return value
+    const map: Record<string, string> = {
+      pledge: '/pledge',
+      donate: '/donate',
+      plant: '/plant',
+      contact: '/contact',
+    }
+    return map[value] ?? '/pledge'
+  }
+
+  const stripInjectedBlockMd = (value: string) =>
+    value.replace(
+      /\n+---\n+### Recommended reading[\s\S]*?### Take action[\s\S]*?(?=\n{2,}|$)/gi,
+      '\n'
+    )
+
+  const stripInjectedBlockHtml = (value: string) =>
+    value.replace(
+      /<hr[^>]*>\s*<h3>Recommended reading<\/h3>[\s\S]*?<h3>Take action<\/h3>[\s\S]*?(?=<h[1-6]>|$)/gi,
+      ''
+    )
 
   const triggerRevalidate = async (slugValue: string) => {
     try {
@@ -184,9 +234,9 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
     insertHtmlAtCursor(html || plain)
   }
 
-  const getSanitizedHtml = () => {
-    const cleaned = sanitizeInsightHtml(contentHtml)
-    if (contentHtml.trim() && !cleaned.trim()) {
+  const getSanitizedHtml = (value = contentHtml) => {
+    const cleaned = sanitizeInsightHtml(value)
+    if (value.trim() && !cleaned.trim()) {
       setHtmlWarning('Your HTML contained unsupported tags. Please use allowed tags only.')
     } else {
       setHtmlWarning('')
@@ -199,12 +249,164 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
     setHtmlPreview(wrapInsightTables(cleaned))
   }
 
+  const buildInjectedContent = async (): Promise<{
+    nextContentMd: string
+    nextContentHtml: string
+    edges: EdgeInsert[]
+  } | null> => {
+    if (contentFormat !== 'html' && contentFormat !== 'md') {
+      return { nextContentMd: contentMd, nextContentHtml: contentHtml, edges: [] }
+    }
+    const trimmedCategory = category.trim()
+    if (!trimmedCategory) {
+      setNotice('Category is required for publish.')
+      return null
+    }
+    const tags = tagsInput
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean)
+    if (tags.length === 0) {
+      setNotice('Please add at least one tag before publishing.')
+      return null
+    }
+
+    const { data: linkMap, error } = await supabase
+      .from('insight_links_map')
+      .select('category,pillar_slug,cluster_slugs,action_type,anchor_variants')
+      .eq('category', trimmedCategory)
+      .maybeSingle<LinkMapRow>()
+
+    if (error) {
+      setNotice(error.message)
+      return null
+    }
+    if (!linkMap) {
+      setNotice('No SEO map found for this category. Add it in Insights SEO Map.')
+      return null
+    }
+    if (!linkMap.pillar_slug) {
+      setNotice('SEO map is missing a pillar slug.')
+      return null
+    }
+
+    const pillarSlug = linkMap.pillar_slug
+    const clusterSlugs = (linkMap.cluster_slugs ?? []).filter(Boolean).slice(0, 4)
+    const allSlugs = Array.from(new Set([pillarSlug, ...clusterSlugs])).filter(Boolean)
+    const { data: linked } = await supabase
+      .from('insights')
+      .select('id,slug,title')
+      .in('slug', allSlugs)
+
+    const bySlug = new Map<string, { id: string; title: string }>()
+    linked?.forEach((row) => {
+      if (row.slug && row.title) bySlug.set(row.slug, { id: row.id, title: row.title })
+    })
+
+    const anchorVariants = (linkMap.anchor_variants ?? {}) as Record<string, any>
+    const resolveAnchor = (slug: string, fallback: string, index?: number) => {
+      if (anchorVariants?.by_slug?.[slug]) return anchorVariants.by_slug[slug]
+      if (slug === pillarSlug && typeof anchorVariants.pillar === 'string') return anchorVariants.pillar
+      if (Array.isArray(anchorVariants.clusters) && typeof index === 'number') {
+        return anchorVariants.clusters[index] ?? fallback
+      }
+      return fallback
+    }
+
+    const pillarTarget: LinkTarget = {
+      slug: pillarSlug,
+      title: bySlug.get(pillarSlug)?.title ?? normalizeSlugTitle(pillarSlug),
+      id: bySlug.get(pillarSlug)?.id ?? null,
+    }
+    const clusterTargets: LinkTarget[] = clusterSlugs.map((slug, idx) => ({
+      slug,
+      title: resolveAnchor(slug, bySlug.get(slug)?.title ?? normalizeSlugTitle(slug), idx),
+      id: bySlug.get(slug)?.id ?? null,
+    }))
+
+    const pillarLabel = resolveAnchor(
+      pillarSlug,
+      bySlug.get(pillarSlug)?.title ?? normalizeSlugTitle(pillarSlug)
+    )
+    const actionPath = getActionPath(linkMap.action_type || '/pledge')
+    const actionDefaults: Record<string, string> = {
+      '/pledge': 'Take the pledge',
+      '/donate': 'Support the mission',
+      '/plant': 'Plant a tree',
+      '/contact': 'Contact the team',
+    }
+    const actionLabel =
+      typeof anchorVariants.action === 'string'
+        ? anchorVariants.action
+        : actionDefaults[actionPath] ?? 'Take action'
+
+    const readingLinks = [
+      `- [${pillarLabel}](/insights/${pillarSlug})`,
+      ...clusterTargets.map((item) => `- [${item.title}](/insights/${item.slug})`),
+    ]
+
+    const mdBlock = [
+      '---',
+      '### Recommended reading',
+      ...readingLinks,
+      '',
+      '### Take action',
+      `[${actionLabel}](${actionPath})`,
+    ].join('\n')
+
+    const htmlList = [
+      `<li><a href="/insights/${pillarSlug}">${pillarLabel}</a></li>`,
+      ...clusterTargets.map(
+        (item) => `<li><a href="/insights/${item.slug}">${item.title}</a></li>`
+      ),
+    ].join('')
+    const htmlBlock = [
+      '<hr/>',
+      '<h3>Recommended reading</h3>',
+      `<ul>${htmlList}</ul>`,
+      '<h3>Take action</h3>',
+      `<p><a href="${actionPath}">${actionLabel}</a></p>`,
+    ].join('')
+
+    const nextContentMd =
+      contentFormat === 'md'
+        ? `${stripInjectedBlockMd(contentMd).trim()}\n\n${mdBlock}\n`
+        : contentMd
+    const nextContentHtml =
+      contentFormat === 'html'
+        ? `${stripInjectedBlockHtml(contentHtml).trim()}${htmlBlock}`
+        : contentHtml
+
+    const edges: EdgeInsert[] = [
+      {
+        to_insight_id: pillarTarget.id ?? null,
+        type: 'pillar',
+        action_path: null,
+      },
+      ...clusterTargets.map((item) => ({
+        to_insight_id: item.id ?? null,
+        type: 'cluster',
+        action_path: null,
+      })),
+      {
+        to_insight_id: null,
+        type: 'action',
+        action_path: actionPath,
+      },
+    ]
+
+    return { nextContentMd, nextContentHtml, edges }
+  }
+
   const insertLink = () => {
     const snippet = '[link text](https://example.com)'
     insertAtCursor(snippet, snippet.length - 'https://example.com)'.length)
   }
 
-  const buildPayload = (nextStatus: Insight['status']) => {
+  const buildPayload = (
+    nextStatus: Insight['status'],
+    overrides?: { content_md?: string | null; content_html?: string | null }
+  ) => {
     const tags = tagsInput
       .split(',')
       .map((tag) => tag.trim())
@@ -213,13 +415,26 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
     const now = new Date().toISOString()
     const nextFormat = contentFormat ?? 'md'
     const cleanedHtml = nextFormat === 'html' ? getSanitizedHtml() : null
+    const nextContentMd =
+      typeof overrides?.content_md === 'string' || overrides?.content_md === null
+        ? overrides.content_md
+        : nextFormat === 'md'
+          ? contentMd.trim()
+          : null
+    const nextContentHtml =
+      typeof overrides?.content_html === 'string' || overrides?.content_html === null
+        ? overrides.content_html
+        : null
+
     return {
       title: title.trim(),
       slug: slug.trim(),
       excerpt: excerpt.trim() || null,
+      category: category.trim() || null,
       content: emptyDoc,
-      content_md: nextFormat === 'md' ? contentMd.trim() : null,
-      content_html: cleanedHtml?.trim() || null,
+      content_md: nextContentMd,
+      content_html:
+        nextFormat === 'html' ? (getSanitizedHtml(nextContentHtml ?? contentHtml).trim() || null) : null,
       content_format: nextFormat,
       cover_image_url: coverImageUrl || null,
       status: nextStatus,
@@ -259,8 +474,22 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
     }
 
     setSaving(true)
-    const payload = buildPayload(nextStatus)
+
+    let injectedContent: Awaited<ReturnType<typeof buildInjectedContent>> | null = null
+    if (nextStatus === 'published') {
+      injectedContent = await buildInjectedContent()
+      if (!injectedContent) {
+        setSaving(false)
+        return
+      }
+    }
+
+    const payload = buildPayload(nextStatus, {
+      content_md: injectedContent?.nextContentMd,
+      content_html: injectedContent?.nextContentHtml,
+    })
     let error = null
+    let savedId = insightId
 
     if (insightId) {
       const res = await supabase.from('insights').update(payload).eq('id', insightId)
@@ -269,6 +498,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
       const res = await supabase.from('insights').insert(payload).select('id,slug').maybeSingle()
       error = res.error
       if (!error && res.data?.id) {
+        savedId = res.data.id
         replace(`/admin/insights/${res.data.id}/edit`)
       }
     }
@@ -276,6 +506,17 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
     if (error) {
       setNotice(error.message)
     } else {
+      if (nextStatus === 'published' && savedId && injectedContent?.edges?.length) {
+        await supabase.from('insights_internal_edges').delete().eq('from_insight_id', savedId)
+        await supabase.from('insights_internal_edges').insert(
+          injectedContent.edges.map((edge) => ({
+            from_insight_id: savedId,
+            to_insight_id: edge.to_insight_id ?? null,
+            type: edge.type,
+            action_path: edge.action_path ?? null,
+          }))
+        )
+      }
       setStatus(nextStatus)
       setNotice(nextStatus === 'published' ? 'Insight published.' : 'Draft saved.')
       router.refresh()
@@ -297,6 +538,7 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
     if (error) {
       setNotice(error.message)
     } else {
+      await supabase.from('insights_internal_edges').delete().eq('from_insight_id', insightId)
       setStatus('draft')
       setNotice('Insight moved back to draft.')
       router.refresh()
@@ -405,6 +647,19 @@ export default function InsightEditor({ initialInsight, defaultAuthorName }: Ins
                       ? 'Slug is available.'
                       : ''}
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm text-white/70">Category *</label>
+              <input
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
+                placeholder="e.g. corporate-sustainability"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm focus:border-emerald-300/60 focus:ring-2 focus:ring-emerald-500"
+              />
+              <p className="text-xs text-white/40">
+                Used for internal links + related insights.
+              </p>
             </div>
 
             <div className="space-y-2">

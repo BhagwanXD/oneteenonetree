@@ -42,4 +42,11 @@ export const adminSections: AdminSection[] = [
     description: 'Create, edit, and publish insights articles.',
     icon: 'article',
   },
+  {
+    title: 'Insights SEO map',
+    navLabel: 'SEO Map',
+    href: '/admin/insights/seo-map',
+    description: 'Manage internal link mappings for published insights.',
+    icon: 'settings',
+  },
 ]
