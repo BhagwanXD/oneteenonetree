@@ -9,6 +9,7 @@ type GalleryItem = {
   id: string
   image_path: string
   media_type?: 'image' | 'video' | null
+  video_muted?: boolean | null
   caption: string | null
   city: string | null
   year: number | null
@@ -62,6 +63,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     published: true,
     sortOrder: '0',
     takenAt: '',
+    videoMuted: true,
   })
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 })
@@ -151,8 +153,8 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
         continue
       }
 
-      const ext = file.name.split('.').pop() || 'jpg'
-      const safeExt = ext.length > 5 ? 'jpg' : ext
+      const ext = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg')
+      const safeExt = ext.length > 5 ? (isVideo ? 'mp4' : 'jpg') : ext
       const mediaType: GalleryItem['media_type'] = isVideo ? 'video' : 'image'
       const yearSegment = new Date().getFullYear()
       const path = `gallery/${yearSegment}/${crypto.randomUUID()}.${safeExt}`
@@ -172,6 +174,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
       const insertPayload = {
         image_path: path,
         media_type: mediaType,
+        video_muted: defaults.videoMuted,
         caption,
         city: defaults.city.trim() || null,
         year,
@@ -186,7 +189,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
         .from('gallery_items')
         .insert(insertPayload)
         .select(
-          'id, image_path, media_type, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
+          'id, image_path, media_type, video_muted, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
         )
         .single()
 
@@ -223,13 +226,14 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
         city: item.city,
         year: item.year,
         drive_type: item.drive_type,
+        video_muted: item.video_muted ?? true,
         is_published: item.is_published,
         sort_order: item.sort_order ?? 0,
         taken_at: item.taken_at,
       })
       .eq('id', item.id)
       .select(
-        'id, image_path, media_type, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
+        'id, image_path, media_type, video_muted, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
       )
       .single()
 
@@ -245,7 +249,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
   }
 
   const handleDelete = async (item: GalleryItem) => {
-    if (!window.confirm('Delete this photo? This cannot be undone.')) return
+    if (!window.confirm('Delete this media item? This cannot be undone.')) return
     setNotice('')
     setBusyId(item.id)
     const { error } = await supabase.from('gallery_items').delete().eq('id', item.id)
@@ -254,11 +258,11 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
     }
     setBusyId(null)
     if (error) {
-      setNotice(error.message || 'Failed to delete photo.')
+      setNotice(error.message || 'Failed to delete media item.')
       return
     }
     setItems((prev) => prev.filter((row) => row.id !== item.id))
-    setNotice('Photo deleted.')
+    setNotice('Media item deleted.')
   }
 
   const handleCsvFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -325,6 +329,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
       const insertPayload = {
         image_path: imagePath,
         media_type: 'image' as const,
+        video_muted: defaults.videoMuted,
         caption: row.caption.trim() || null,
         city: row.city.trim() || null,
         year,
@@ -339,7 +344,7 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
         .from('gallery_items')
         .insert(insertPayload)
         .select(
-          'id, image_path, media_type, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
+          'id, image_path, media_type, video_muted, caption, city, year, drive_type, is_published, sort_order, taken_at, created_at'
         )
         .single()
 
@@ -388,6 +393,9 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
           <Icon name="upload" size={18} aria-hidden="true" />
           Upload media
         </div>
+        <p className="text-sm text-white/60">
+          Videos will be stored in the same gallery bucket. Large files may take longer to upload.
+        </p>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2 text-sm text-white/70">
             Default caption (optional)
@@ -465,6 +473,17 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
               className="h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--acc)] focus:ring-[var(--acc)]"
             />
             Publish immediately
+          </label>
+          <label className="flex items-center gap-3 text-sm text-white/70">
+            <input
+              type="checkbox"
+              checked={defaults.videoMuted}
+              onChange={(event) =>
+                setDefaults((prev) => ({ ...prev, videoMuted: event.target.checked }))
+              }
+              className="h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--acc)] focus:ring-[var(--acc)]"
+            />
+            Mute videos by default
           </label>
         </div>
 
@@ -711,6 +730,18 @@ export default function GalleryAdminClient({ initialItems }: { initialItems: Gal
                         className="h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--acc)] focus:ring-[var(--acc)]"
                       />
                       Published
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-white/60">
+                      <input
+                        type="checkbox"
+                        checked={item.video_muted ?? true}
+                        onChange={(event) =>
+                          updateItemField(item.id, 'video_muted', event.target.checked)
+                        }
+                        disabled={item.media_type !== 'video'}
+                        className="h-4 w-4 rounded border-white/20 bg-white/10 text-[var(--acc)] focus:ring-[var(--acc)] disabled:opacity-40"
+                      />
+                      Mute video
                     </label>
                   </div>
                 </div>

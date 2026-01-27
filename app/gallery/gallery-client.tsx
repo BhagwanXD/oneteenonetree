@@ -8,6 +8,7 @@ type GalleryItem = {
   id: string
   media_url: string
   media_type?: 'image' | 'video' | null
+  video_muted?: boolean | null
   caption: string | null
   city: string | null
   year: number | null
@@ -91,6 +92,7 @@ export default function GalleryClient({
                             <video
                               src={item.media_url}
                               className="h-full w-full object-cover"
+                              muted={item.video_muted ?? true}
                               controls
                               preload="metadata"
                             />

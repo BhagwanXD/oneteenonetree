@@ -20,6 +20,7 @@ type GalleryRow = {
   id: string
   image_path: string
   media_type?: 'image' | 'video' | null
+  video_muted?: boolean | null
   caption: string | null
   city: string | null
   year: number | null
@@ -45,7 +46,7 @@ const getGalleryItems = unstable_cache(
     const { data } = await supabase
       .from('gallery_items')
       .select(
-        'id, image_path, media_type, caption, city, year, drive_type, tags, sort_order, taken_at, created_at'
+        'id, image_path, media_type, video_muted, caption, city, year, drive_type, tags, sort_order, taken_at, created_at'
       )
       .eq('is_published', true)
       .order('sort_order', { ascending: true })
@@ -55,6 +56,7 @@ const getGalleryItems = unstable_cache(
       ...row,
       media_type: row.media_type ?? 'image',
       media_url: resolveMediaUrl(supabase, row.image_path),
+      video_muted: row.video_muted ?? true,
     }))
 
     return items
