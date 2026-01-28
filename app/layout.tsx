@@ -83,38 +83,27 @@ export const viewport: Viewport = {
 
 const globalJsonLd = {
   '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Organization',
-      '@id': `${siteUrl}/#organization`,
-      name: 'OneTeenOneTree',
-      url: siteUrl,
-      logo: `${siteUrl}/logo.png`,
-      description:
-        'OneTeenOneTree is a youth-led environmental initiative and climate action movement turning pledges into real trees through verified community drives in India.',
-      foundingDate: '2025',
-      founder: {
-        '@type': 'Person',
-        name: 'Utkarsh Singh',
-      },
-      areaServed: 'IN',
-      sameAs: [
-        'https://www.instagram.com/oneteen.onetree/',
-        'https://www.linkedin.com/company/oneteen-onetree/',
-        'https://www.youtube.com/@oneteenonetree',
-      ],
-    },
-    {
-      '@type': 'WebSite',
-      '@id': `${siteUrl}/#website`,
-      url: siteUrl,
-      name: 'OneTeenOneTree',
-      description:
-        'OneTeenOneTree is a youth-led environmental initiative and climate action movement turning pledges into real trees through verified community drives in India.',
-      inLanguage: 'en-IN',
-      publisher: { '@id': `${siteUrl}/#organization` },
-    },
+  '@type': 'NGO',
+  name: 'OneTeenOneTree',
+  alternateName: ['One Teen One Tree', '1Teen1Tree'],
+  url: siteUrl,
+  logo: `${siteUrl}/logo.png`,
+  description:
+    'OneTeenOneTree is a youth-led environmental NGO and climate action movement empowering students to plant trees, promote sustainability, and create measurable ecological impact.',
+  foundingDate: '2025',
+  founder: {
+    '@type': 'Person',
+    name: 'Utkarsh Singh',
+  },
+  sameAs: [
+    'https://www.instagram.com/oneteenonetree',
+    'https://www.linkedin.com/company/oneteenonetree',
+    'https://www.youtube.com/@oneteenonetree',
   ],
+  areaServed: {
+    '@type': 'Country',
+    name: 'India',
+  },
 }
 
 // --- LAYOUT COMPONENT ---

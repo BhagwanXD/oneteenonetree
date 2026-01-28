@@ -44,6 +44,13 @@ export const faqSections: FaqSection[] = [
         'OneTeenOneTree is a youth-led environmental initiative and climate action movement based in India. We turn pledges into real trees through verified community drives, student leadership, and impact storytelling.'
       ),
       item(
+        'Is OneTeenOneTree a book?',
+        [
+          'No. OneTeenOneTree is a youth-led climate action initiative based in India focused on tree plantation, student engagement, and verified community impact.',
+        ],
+        'No. OneTeenOneTree is a youth-led climate action initiative based in India focused on tree plantation, student engagement, and verified community impact.'
+      ),
+      item(
         'Is OneTeenOneTree an NGO?',
         [
           'We are a youth-led initiative working with schools, volunteers, and partners to scale verified trees. ',
